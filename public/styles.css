@@ -251,6 +251,44 @@ h1 span {
 .number { color: #b5cea8; }
 .property { color: var(--text); }
 
+/* Features Section */
+.features-section {
+    padding: 4rem 0 8rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.feature-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    border-radius: 4px;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.feature-block:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.feature-block h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text);
+    text-transform: uppercase;
+}
+
+.feature-block p {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
 /* Pricing Section */
 .pricing-section {
     padding: 4rem 0;
