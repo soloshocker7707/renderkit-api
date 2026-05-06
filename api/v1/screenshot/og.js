@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   const themes = {
     light: { bg: '#ffffff', text: '#1a1a1a', secondary: '#4a4a4a' },
     dark: { bg: '#0F0F1A', text: '#ffffff', secondary: '#a0a0a0' },
-    brand: { bg: '#534AB7', text: '#ffffff', secondary: '#e0e0e0' }
+    brand: { bg: '#00FF41', text: '#000000', secondary: '#333333' } // Updated to Neo-Brutalist Green
   };
 
   const currentTheme = themes[theme] || themes.light;
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     <html>
     <head>
       <meta charset="utf-8">
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
       <style>
         body {
           margin: 0;
@@ -59,14 +59,15 @@ export default async function handler(req, res) {
           box-sizing: border-box;
           position: relative;
           overflow: hidden;
+          border: 20px solid ${currentTheme.text === '#ffffff' ? '#000' : '#fff'};
         }
 
         .logo {
           position: absolute;
           top: 60px;
           left: 80px;
-          max-height: 50px;
-          max-width: 200px;
+          max-height: 60px;
+          max-width: 250px;
           object-fit: contain;
         }
 
@@ -75,32 +76,22 @@ export default async function handler(req, res) {
         }
 
         h1 {
-          font-size: 72px;
-          font-weight: 700;
-          line-height: 1.1;
+          font-size: 90px;
+          font-weight: 900;
+          line-height: 1.0;
           margin: 0;
-          letter-spacing: -0.02em;
-          max-width: 900px;
+          letter-spacing: -0.04em;
+          max-width: 1000px;
+          text-transform: uppercase;
         }
 
         p {
-          font-size: 32px;
-          line-height: 1.4;
-          margin-top: 24px;
+          font-size: 38px;
+          line-height: 1.3;
+          margin-top: 30px;
           color: ${currentTheme.secondary};
-          max-width: 800px;
-        }
-
-        /* Subtle design element */
-        .accent {
-          position: absolute;
-          bottom: -50px;
-          right: -50px;
-          width: 300px;
-          height: 300px;
-          background: ${currentTheme.text};
-          opacity: 0.03;
-          border-radius: 50%;
+          max-width: 900px;
+          font-weight: 700;
         }
       </style>
     </head>
@@ -110,44 +101,66 @@ export default async function handler(req, res) {
         <h1>${displayTitle}</h1>
         ${displayDescription ? `<p>${displayDescription}</p>` : ''}
       </div>
-      <div class="accent"></div>
     </body>
     </html>
   `;
 
-  let browser = null;
-  try {
-    browser = await getBrowser();
-    const page = await browser.newPage();
-    
-    await page.setViewport({ width: 1200, height: 630 });
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+  let lastError = null;
+  const maxRetries = 3;
 
-    const screenshot = await page.screenshot({
-      type: 'png',
-      encoding: 'base64'
-    });
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    let browser = null;
+    let page = null;
 
-    if (process.env.DEBUG_PREVIEW === 'true') {
-      const buffer = Buffer.from(screenshot, 'base64');
-      res.setHeader('Content-Type', 'image/png');
-      res.setHeader('Content-Length', buffer.length);
-      return res.end(buffer, 'binary');
+    try {
+      browser = await getBrowser();
+      page = await browser.newPage();
+      
+      await page.setViewport({ width: 1200, height: 630 });
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      const screenshot = await page.screenshot({
+        type: 'png',
+        encoding: 'base64'
+      });
+
+      await page.close();
+
+      if (process.env.DEBUG_PREVIEW === 'true') {
+        const buffer = Buffer.from(screenshot, 'base64');
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Length', buffer.length);
+        return res.end(buffer, 'binary');
+      }
+
+      return res.status(200).json({
+        success: true,
+        image_base64: screenshot,
+        width: 1200,
+        height: 630,
+        theme,
+        attempt,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      lastError = error;
+      console.error(`OG Attempt ${attempt} failed:`, error.message);
+      if (page) await page.close().catch(() => {});
+      
+      if (error.message.includes('Target closed') || error.message.includes('Session closed')) {
+        await closeBrowser(true); 
+      }
+
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 500));
+        continue;
+      }
     }
-
-    return res.status(200).json({
-      success: true,
-      image_base64: screenshot,
-      width: 1200,
-      height: 630,
-      theme,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('OG generation error:', error);
-    return res.status(500).json({ status: 'error', message: error.message });
-  } finally {
-    await closeBrowser(browser);
   }
+
+  return res.status(500).json({ 
+    status: 'error', 
+    message: `All ${maxRetries} OG attempts failed. Last error: ${lastError.message}` 
+  });
 }

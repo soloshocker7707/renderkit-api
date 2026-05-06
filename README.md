@@ -6,31 +6,32 @@ A high-performance API for web screenshots, PDF generation, and Open Graph image
 
 - **Web Screenshots**: Capture any URL as PNG or JPEG.
 - **PDF Generation**: High-fidelity PDF conversion with customizable formats.
-- **Open Graph Images**: Specialized endpoint for social media preview images (1200x630).
-- **Headless Edge**: Scalable browser logic powered by `puppeteer-core` and `@sparticuz/chromium`.
-- **Security**: Built-in API Key and Zuplo secret verification.
+- **Smart Wait Engine**: Auto-stability detection for heavy SPAs and animations.
+- **Anti-Bot Stealth**: Integrated User-Agent rotation and footprint evasions.
+- **High-Performance Pooling**: Singleton browser pattern for zero cold starts.
+- **Resilient Retry Logic**: 3-attempt auto-retry with timeout fallback snapshots.
 
-## 🛠 Tech Stack
+## 📖 Documentation (Postman)
 
-- **Runtime**: Node.js (ES Modules)
-- **Framework**: Vercel Serverless Functions
-- **Browser**: Puppeteer-core + Chromium
-- **Deployment**: Vercel
+We provide a pre-configured Postman Collection for quick testing.
+- **File**: `PintAPI.postman_collection.json`
+- **How to use**: Open Postman -> Import -> Select the file.
+- **Variables**: Set `baseUrl` and `apiKey` in the collection variables.
 
 ## 🚦 API Endpoints
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/health` | API Status & Version | No |
-| POST | `/v1/screenshot/capture` | Capture PNG/JPEG screenshot | Yes |
-| POST | `/v1/screenshot/pdf` | Generate PDF from URL | Yes |
-| POST | `/v1/screenshot/og` | Capture 1200x630 OG image | Yes |
+| GET    | `/health` | API Status & Version | No |
+| POST   | `/v1/screenshot/capture` | Capture PNG/JPEG screenshot (Supports `wait: auto`) | Yes |
+| POST   | `/v1/screenshot/pdf` | Generate PDF from URL or HTML | Yes |
+| POST   | `/v1/screenshot/og` | Dynamic OG image generation (1200x630) | Yes |
 
 ## 📦 Local Development
 
 ```bash
 npm install
-# Ensure you have a local Chrome instance or set IS_LOCAL=true
+# Ensure you have a local Chrome instance
 npm start
 ```
 
@@ -38,18 +39,10 @@ npm start
 
 Create a `.env` file in the root directory:
 ```env
-API_KEYS=your-key-1,your-key-2
+API_KEYS=key1,key2
 SECRET_ZUPLO=your-internal-secret
-ZUPLO_SECRET=your-internal-secret
-DEBUG_PREVIEW=false
-NODE_ENV=development
+DEBUG_PREVIEW=true
 ```
-
-## 🎫 Tiered Access
-
-The API supports two access tiers via headers:
-- **Paid Tier**: Pass `x-zuplo-secret` matching `SECRET_ZUPLO`.
-- **Free Tier**: Pass `x-free-tier: true` (Limited to 100 calls/month via Zuplo).
 
 ---
 Built with ❤️ for rapid web utility development.
