@@ -12,11 +12,12 @@
     "docs": "zuplo docs"
   },
   "engines": {
-    "node": "22.x"
+    "node": "^22.0.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "@sparticuz/chromium"
     ]
   },
   "dependencies": {
@@ -27,7 +28,8 @@
     "zuplo": "^6"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "typescript": "^5"
+    "@types/node": "^22",
+    "typescript": "^5",
+    "esbuild": "^0.21.0"
   }
 }
