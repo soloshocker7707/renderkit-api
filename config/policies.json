@@ -24,6 +24,7 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "rateLimitBy": "function",
+          "requestsPerMinute": 5,
           "function": {
             "export": "getRateLimit",
             "module": "$import(./modules/tiered-limits)"
@@ -39,6 +40,8 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "rateLimitBy": "function",
+          "limit": 250,
+          "window": "30d",
           "function": {
             "export": "getQuota",
             "module": "$import(./modules/tiered-limits)"
