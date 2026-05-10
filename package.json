@@ -12,7 +12,12 @@
     "docs": "zuplo docs"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "dependencies": {
     "dotenv": "^17.4.2",
