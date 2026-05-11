@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SUPABASE CONFIGURATION ---
     // User needs to fill these from Supabase Project Settings
     const SUPABASE_URL = 'https://cvsdvxygucjbbtyydgmx.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // User: Fill this in!
+    const SUPABASE_ANON_KEY = 'sb_publishable_C32o3FATbcSmVNhxZyCRgA_0pjUX_Lr'; // User: Fill this in!
     const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     // --- UI ELEMENTS ---
