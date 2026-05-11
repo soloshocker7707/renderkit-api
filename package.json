@@ -14,24 +14,9 @@
   "engines": {
     "node": "22.x"
   },
-  "pnpm": {
-    "trustedDependencies": [
-      "esbuild",
-      "@sparticuz/chromium",
-      "workerd",
-      "protobufjs",
-      "@swc/core",
-      "deno"
-    ],
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "@sparticuz/chromium",
-      "workerd",
-      "protobufjs",
-      "@swc/core",
-      "deno"
-    ]
-  },
+  "workspaces": [
+    "docs"
+  ],
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
