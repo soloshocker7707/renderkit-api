@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "Pint Screenshot API",
-    "description": "High-performance API for web screenshots, PDF generation, and OG images."
+    "description": "High-performance infrastructure for web screenshots, PDF generation, and OG images."
   },
   "paths": {
     "/v1/screenshot/capture": {
@@ -25,6 +25,28 @@
               "dynamic-rate-limit",
               "inject-zuplo-secret"
             ]
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": { "type": "string", "example": "https://google.com" },
+                  "clean": { "type": "boolean", "description": "Auto-strip cookie banners and popups", "default": false },
+                  "wait": { "type": "string", "enum": ["networkidle0", "networkidle2", "smart"], "default": "networkidle2" },
+                  "freezeAnimations": { "type": "boolean", "default": true },
+                  "css": { "type": "string", "description": "Inject custom CSS before capture" },
+                  "template": { "type": "string", "description": "Use a predefined HTML template" },
+                  "data": { "type": "object", "description": "Dynamic data for templates" },
+                  "width": { "type": "integer", "default": 1280 },
+                  "height": { "type": "integer", "default": 800 },
+                  "fullPage": { "type": "boolean", "default": false },
+                  "debug": { "type": "boolean", "default": false }
+                }
+              }
+            }
           }
         },
         "responses": {
@@ -53,6 +75,23 @@
             ]
           }
         },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": { "type": "string" },
+                  "template": { "type": "string" },
+                  "data": { "type": "object" },
+                  "format": { "type": "string", "enum": ["A4", "Letter", "Legal"], "default": "A4" },
+                  "landscape": { "type": "boolean", "default": false },
+                  "clean": { "type": "boolean", "default": false }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": { "description": "OK" }
         }
@@ -77,6 +116,21 @@
               "dynamic-rate-limit",
               "inject-zuplo-secret"
             ]
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "theme": { "type": "string", "enum": ["dark", "light", "green"], "default": "dark" }
+                }
+              }
+            }
           }
         },
         "responses": {
