@@ -58,26 +58,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('auth-password').value;
             const submitBtn = document.getElementById('auth-submit');
             
+            if (SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+                alert('ERROR: Supabase API Key not configured. Please add your Anon Key to script.js.');
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Processing...';
 
-            if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message);
-                else authModal.style.display = 'none';
-            } else {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) alert('Check your email for confirmation!');
-                else authModal.style.display = 'none';
+            try {
+                if (isLogin) {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    authModal.style.display = 'none';
+                } else {
+                    const { data, error } = await supabase.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            emailRedirectTo: window.location.origin
+                        }
+                    });
+                    if (error) throw error;
+                    alert('Registration successful! Please check your email for the confirmation link.');
+                    authModal.style.display = 'none';
+                }
+            } catch (err) {
+                console.error('Auth Error:', err.message);
+                alert(`Authentication Error: ${err.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLogin ? 'Login' : 'Sign Up';
             }
-            
-            submitBtn.disabled = false;
-            submitBtn.textContent = isLogin ? 'Login' : 'Sign Up';
         });
 
-        logoutBtn.addEventListener('click', () => {
-            supabase.auth.signOut();
-            window.location.reload(); // Refresh to clear state
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.reload();
         });
     }
 

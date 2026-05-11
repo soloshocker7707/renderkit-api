@@ -17,11 +17,19 @@
   "pnpm": {
     "trustedDependencies": [
       "esbuild",
-      "@sparticuz/chromium"
+      "@sparticuz/chromium",
+      "workerd",
+      "protobufjs",
+      "@swc/core",
+      "deno"
     ],
     "onlyBuiltDependencies": [
       "esbuild",
-      "@sparticuz/chromium"
+      "@sparticuz/chromium",
+      "workerd",
+      "protobufjs",
+      "@swc/core",
+      "deno"
     ]
   },
   "dependencies": {

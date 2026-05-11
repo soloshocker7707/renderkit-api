@@ -10,14 +10,7 @@
   "engines": {
     "node": "22.x"
   },
-  "pnpm": {
-    "trustedDependencies": [
-      "esbuild"
-    ],
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
+
   "dependencies": {
     "react": "^19",
     "react-dom": "^19",
