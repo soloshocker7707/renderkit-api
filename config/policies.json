@@ -1,11 +1,11 @@
 {
   "policies": [
     {
-      "name": "api-key-auth",
-      "policyType": "api-key-inbound",
+      "name": "supabase-auth",
+      "policyType": "custom-code-inbound",
       "handler": {
-        "export": "ApiKeyInboundPolicy",
-        "module": "$import(@zuplo/runtime)"
+        "export": "default",
+        "module": "$import(./modules/supabase-auth)"
       }
     },
     {

@@ -204,7 +204,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "https://api.pintapi.com",
+			"value": "https://pint-api-panel-main-87c9a67.zuplo.app",
 			"type": "string"
 		},
 		{

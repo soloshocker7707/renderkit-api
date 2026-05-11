@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Using Inter for that sharp, brutalist tech feel -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Dynamic glowing background elements -->
@@ -23,19 +25,83 @@
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
             <a href="/api/health" class="health-badge">System: ONLINE</a>
+            <button id="auth-btn" class="btn btn-nav">Login</button>
         </div>
     </nav>
 
-    <main>
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="auth-form-container">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Enter your details to access your dashboard.</p>
+                <form id="auth-form">
+                    <input type="email" id="auth-email" placeholder="EMAIL ADDRESS" required>
+                    <input type="password" id="auth-password" placeholder="PASSWORD" required>
+                    <button type="submit" id="auth-submit" class="btn btn-primary">Login</button>
+                </form>
+                <p class="auth-toggle">Don't have an account? <span id="toggle-auth">Sign Up</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard View (Hidden by Default) -->
+    <div id="dashboard" class="dashboard-section" style="display: none;">
+        <div class="dashboard-header">
+            <h2>Developer <span>Dashboard</span></h2>
+            <button id="logout-btn" class="btn btn-secondary">Logout</button>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card main-stats">
+                <h3>Your API Key</h3>
+                <div class="key-container">
+                    <code id="display-api-key">••••••••••••••••••••••••</code>
+                    <button id="copy-key" class="btn btn-small">Copy</button>
+                </div>
+                <p class="key-hint">Never share your secret key. Use it in the <code>x-api-key</code> header.</p>
+            </div>
+
+            <div class="dashboard-card usage-card">
+                <h3>Monthly Usage</h3>
+                <div class="usage-stats">
+                    <div class="stat-item">
+                        <span class="label">Tier</span>
+                        <span class="value" id="user-tier">Free</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Usage</span>
+                        <span class="value">0 / 250</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 2%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card docs-card">
+            <h3>How to Use</h3>
+            <div class="code-snippet">
+<pre><code><span class="keyword">curl</span> -X POST https://pint-api-panel-main-87c9a67.zuplo.app/v1/screenshot/capture \
+-H <span class="string">"x-api-key: YOUR_KEY"</span> \
+-d '{"url": "https://google.com"}'</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <main id="landing-content">
         <section class="hero">
             <div class="hero-badge">BUILT FOR SAAS PLATFORMS</div>
             <h1 class="reveal">CAPTURE <br>THE WEB. <br><span>FLAWLESSLY.</span></h1>
             <p class="subtitle">A high-performance screenshot and PDF API. No missing libraries. No headless browser headaches. Just pure, scalable pixel perfection.</p>
             <div class="cta-group">
                 <a href="#pricing" class="btn btn-primary">View Pricing</a>
-                <a href="#docs" class="btn btn-secondary">Read Docs</a>
+                <button id="hero-signup" class="btn btn-secondary">Get Free API Key</button>
             </div>
         </section>
+
 
         <section class="api-demo">
             <div class="code-window">

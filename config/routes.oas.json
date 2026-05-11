@@ -20,7 +20,7 @@
           },
           "policies": {
             "inbound": [
-              "api-key-auth",
+              "supabase-auth",
               "dynamic-quota",
               "dynamic-rate-limit",
               "inject-zuplo-secret"
@@ -46,7 +46,7 @@
           },
           "policies": {
             "inbound": [
-              "api-key-auth",
+              "supabase-auth",
               "dynamic-quota",
               "dynamic-rate-limit",
               "inject-zuplo-secret"
@@ -72,7 +72,7 @@
           },
           "policies": {
             "inbound": [
-              "api-key-auth",
+              "supabase-auth",
               "dynamic-quota",
               "dynamic-rate-limit",
               "inject-zuplo-secret"
