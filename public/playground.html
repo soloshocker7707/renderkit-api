@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pint API - Live Playground</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .playground-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+        }
+        .controls {
+            background: #080808;
+            border: 3px solid #fff;
+            padding: 2rem;
+            box-shadow: 10px 10px 0 var(--accent);
+        }
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+        .control-group label {
+            display: block;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: #000;
+            border: 2px solid #333;
+            color: #fff;
+            font-family: inherit;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            cursor: pointer;
+        }
+        .checkbox-group input {
+            cursor: pointer;
+        }
+        .preview-area {
+            background: #000;
+            border: 3px solid #fff;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-area img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #333;
+        }
+        .render-status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: var(--accent);
+            color: #000;
+            padding: 5px 10px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            display: none;
+        }
+        .error-msg {
+            color: #ff0000;
+            font-weight: 700;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">PINT<span>API</span></div>
+            <div class="nav-links">
+                <a href="index.html">Back Home</a>
+                <button id="auth-btn" class="btn btn-nav">Dashboard</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="hero" style="margin-bottom: 3rem;">
+            <div class="hero-badge">LIVE PLAYGROUND</div>
+            <h1>TEST THE <span>ENGINE.</span></h1>
+            <p class="subtitle">Enter any URL below to see our advanced rendering engine in action. No mocks, just raw API power.</p>
+        </div>
+
+        <div class="playground-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Target URL</label>
+                    <input type="text" id="target-url" placeholder="https://example.com" value="https://news.ycombinator.com">
+                </div>
+
+                <div class="control-group">
+                    <label>Advanced Options</label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-clean" checked> Auto Clean Mode
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-wait" checked> Smart Stabilization
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-freeze" checked> Freeze Animations
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-debug"> Debug Mode
+                    </label>
+                </div>
+
+                <button id="render-btn" class="btn btn-primary" style="width: 100%;">Render Screenshot</button>
+                <div id="error-display" class="error-msg"></div>
+            </div>
+
+            <div class="preview-area" id="preview-area">
+                <div id="placeholder-text" style="color: #444; font-weight: 900; text-transform: uppercase;">Awaiting Input...</div>
+                <div id="render-status" class="render-status">RENDERING...</div>
+            </div>
+        </div>
+
+        <div id="debug-info" style="margin-top: 2rem; display: none;">
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                    <div class="title">RENDER_LOGS.JSON</div>
+                </div>
+                <div class="code-content" id="debug-content" style="font-size: 0.9rem; padding: 1.5rem;">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="playground.js"></script>
+</body>
+</html>
