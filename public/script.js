@@ -165,25 +165,49 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Simulate API call delay
         setTimeout(() => {
-            let imgUrl = '';
-            if (type === 'template') {
-                imgUrl = 'https://via.placeholder.com/1200x630/00FF41/000000?text=DYNAMIC+SOCIAL+CARD';
+            if (type === 'clean') {
+                container.classList.add('split-view');
+                container.innerHTML = `
+                    <div class="demo-side">
+                        <div class="side-label">BEFORE (CLUTTERED)</div>
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600" style="filter: grayscale(1); opacity: 0.5;">
+                        <div style="position:absolute; inset:0; background:rgba(255,0,0,0.2); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:0.8rem; text-transform:uppercase;">[Cookie Banner]</div>
+                    </div>
+                    <div class="demo-side">
+                        <div class="side-label after">AFTER (CLEAN)</div>
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600">
+                    </div>
+                `;
+            } else if (type === 'template') {
+                const imgUrl = 'https://via.placeholder.com/1200x630/000000/00FF41?text=SOCIAL+CARD+GENERATED';
+                container.innerHTML = `<img src="${imgUrl}" alt="${type} demo" style="animation: modalIn 0.5s ease-out; border: 2px solid var(--accent);">`;
+            } else if (type === 'smart') {
+                const imgUrl = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200';
+                container.innerHTML = `
+                    <div class="demo-side" style="width:100%">
+                        <div class="side-label after">SMART SETTLED</div>
+                        <img src="${imgUrl}" style="animation: modalIn 0.8s ease-out;">
+                    </div>
+                `;
             } else {
-                imgUrl = 'https://via.placeholder.com/1280x800/111111/00FF41?text=' + type.toUpperCase() + '+RENDER';
+                const imgUrl = 'https://via.placeholder.com/1280x800/111111/00FF41?text=' + type.toUpperCase() + '+RENDER';
+                container.innerHTML = `<img src="${imgUrl}" alt="${type} demo" style="animation: modalIn 0.5s ease-out;">`;
             }
-            container.innerHTML = `<img src="${imgUrl}" alt="${type} demo" style="animation: modalIn 0.5s ease-out;">`;
             
-            // Add a "Reset" button after 5 seconds
-            setTimeout(() => {
-                const resetBtn = document.createElement('button');
-                resetBtn.className = 'btn btn-small';
-                resetBtn.style.position = 'absolute';
-                resetBtn.style.bottom = '10px';
-                resetBtn.style.right = '10px';
-                resetBtn.textContent = 'Reset';
-                resetBtn.onclick = () => { container.innerHTML = originalContent; };
-                container.appendChild(resetBtn);
-            }, 1000);
-        }, 1500);
+            // Add a "Reset" button
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'btn btn-small';
+            resetBtn.style.position = 'absolute';
+            resetBtn.style.bottom = '10px';
+            resetBtn.style.right = '10px';
+            resetBtn.style.zIndex = '10';
+            resetBtn.textContent = 'Reset';
+            resetBtn.onclick = (e) => { 
+                e.stopPropagation();
+                container.classList.remove('split-view');
+                container.innerHTML = originalContent; 
+            };
+            container.appendChild(resetBtn);
+        }, 1200);
     };
 });
