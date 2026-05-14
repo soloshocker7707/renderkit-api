@@ -1,20 +1,20 @@
 import { ZuploRequest, ZuploContext } from "@zuplo/runtime";
 
 const TIER_CONFIGS = {
-  Free: {
+  Starter: {
     monthly_limit: 250,
     rpm: 5
   },
-  Starter: {
+  Pro: {
     monthly_limit: 5000,
     rpm: 30
   },
-  Growth: {
-    monthly_limit: 25000,
+  Business: {
+    monthly_limit: 20000,
     rpm: 120
   },
-  Scale: {
-    monthly_limit: 75000,
+  Enterprise: {
+    monthly_limit: 50000,
     rpm: 300
   }
 };
@@ -22,7 +22,7 @@ const TIER_CONFIGS = {
 export function getRateLimit(request: ZuploRequest, context: ZuploContext) {
   // Identify group - default to Free if not found
   const groups = request.user?.groups || [];
-  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Free';
+  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter';
   const config = TIER_CONFIGS[activeTierName];
 
   return {
@@ -35,7 +35,7 @@ export function getRateLimit(request: ZuploRequest, context: ZuploContext) {
 export function getQuota(request: ZuploRequest, context: ZuploContext) {
   // Identify group - default to Free if not found
   const groups = request.user?.groups || [];
-  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Free';
+  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter';
   const config = TIER_CONFIGS[activeTierName];
 
   return {
