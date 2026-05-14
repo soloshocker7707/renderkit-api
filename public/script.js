@@ -26,15 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
             landingContent.style.display = 'none';
             dashboard.style.display = 'block';
             
-            // Fetch Profile (API Key)
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .single();
-            
-            if (data) {
-                document.getElementById('display-api-key').textContent = data.api_key;
-                document.getElementById('user-tier').textContent = data.tier;
+            // Proactive Profile Fetching
+            try {
+                let { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .single();
+                
+                // If profile doesn't exist (can happen right after signup if trigger delay)
+                if (!data && user) {
+                    console.log('Profile not found, attempting to create...');
+                    const newKey = 'pk_' + Math.random().toString(36).substring(2, 15);
+                    const { data: newData, error: createError } = await supabase
+                        .from('profiles')
+                        .insert([{ id: user.id, api_key: newKey, tier: 'Starter' }])
+                        .select()
+                        .single();
+                    data = newData;
+                }
+
+                if (data) {
+                    document.getElementById('display-api-key').textContent = data.api_key;
+                    document.getElementById('user-tier').textContent = data.tier;
+                }
+            } catch (err) {
+                console.error('Profile Load Error:', err);
             }
         } else {
             authBtn.textContent = 'Login';
@@ -48,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI(session?.user);
         });
 
-        supabase.auth.onAuthStateChange((_event, session) => {
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth State Change:', event);
             updateUI(session?.user);
         });
 
