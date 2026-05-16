@@ -20,12 +20,8 @@
       "name": "dynamic-rate-limit",
       "policyType": "rate-limit-v1",
       "options": {
-        "rateLimitBy": "function",
-        "requestsPerMinute": 5,
-        "function": {
-          "export": "getRateLimit",
-          "module": "$import(./modules/tiered-limits)"
-        }
+        "rateLimitBy": "user",
+        "requestsPerMinute": 1
       }
     },
     {
