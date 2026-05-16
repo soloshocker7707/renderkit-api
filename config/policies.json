@@ -39,7 +39,7 @@
         "export": "QuotaInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "rateLimitBy": "function",
+          "quotaBy": "function",
           "limit": 250,
           "period": "30d",
           "function": {
