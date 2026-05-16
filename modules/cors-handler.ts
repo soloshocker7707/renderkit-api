@@ -14,8 +14,6 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
     });
   }
 
-  // For other requests, the headers will be added by the response
-  const response = await context.next();
-  response.headers.set("Access-Control-Allow-Origin", "*");
-  return response;
+  // For other requests, continue to the next policy
+  return request;
 }

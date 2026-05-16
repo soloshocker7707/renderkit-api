@@ -48,9 +48,12 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
       groups: [userProfile.tier]
     };
 
-    return context.next();
+    return request;
   } catch (err) {
     context.log.error(`Supabase Auth Error: ${err.message}`);
-    return context.internalServerError();
+    return new Response(JSON.stringify({ error: "Internal Server Error", details: err.message }), { 
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }
