@@ -152,6 +152,11 @@
             "options": {
               "baseUrl": "https://renderkit-api.vercel.app/api"
             }
+          },
+          "policies": {
+            "inbound": [
+              "cors"
+            ]
           }
         },
         "responses": {
@@ -203,6 +208,11 @@
             "options": {
               "baseUrl": "https://renderkit-api.vercel.app/{path}"
             }
+          },
+          "policies": {
+            "inbound": [
+              "cors"
+            ]
           }
         },
         "responses": {

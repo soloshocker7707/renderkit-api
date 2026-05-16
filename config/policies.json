@@ -51,27 +51,10 @@
     },
     {
       "name": "cors",
-      "policyType": "cors-v1",
+      "policyType": "custom-code-inbound",
       "handler": {
-        "export": "CorsInboundPolicy",
-        "module": "$import(@zuplo/runtime)",
-        "options": {
-          "accessControlAllowMethods": [
-            "GET",
-            "POST",
-            "OPTIONS",
-            "PUT",
-            "DELETE"
-          ],
-          "accessControlAllowHeaders": [
-            "Content-Type",
-            "x-api-key",
-            "Authorization"
-          ],
-          "accessControlAllowOrigin": [
-            "*"
-          ]
-        }
+        "export": "default",
+        "module": "$import(./modules/cors-handler)"
       }
     }
   ]
