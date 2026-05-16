@@ -24,7 +24,8 @@
               "supabase-auth",
               "dynamic-quota",
               "dynamic-rate-limit",
-              "inject-zuplo-secret"
+              "inject-zuplo-secret",
+              "debug-log"
             ]
           }
         },
