@@ -59,7 +59,8 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
 
     return request;
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Internal Server Error", details: err.message }), { 
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: "Internal Server Error", details: errorMessage }), { 
       status: 500, headers: { "Content-Type": "application/json" } 
     });
   }

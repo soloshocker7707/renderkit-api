@@ -1,0 +1,18 @@
+{
+  "BUILD_ID": "a6a52173-0258-448e-b114-e2a5cfb50bbd",
+  "TIMESTAMP": "2026-05-17T15:51:04.715Z",
+  "ZUPLO_VERSION": "6.70.29",
+  "COMPATIBILITY_DATE": "2025-02-06",
+  "ENVIRONMENT_TYPE": "LOCAL_DEVELOPMENT",
+  "IS_LOCAL_DEVELOPMENT": true,
+  "COMPATIBILITY_FLAGS": {
+    "runOutboundPoliciesOnHandlerOnAllStatuses": true,
+    "doNotRunHooksOnSystemRoutes": true,
+    "removeAllVendorHeadersExceptListed": true,
+    "allowCustomPorts": true,
+    "removeLegacyLogInitialization": true,
+    "useForwardRedirectsPropOnUrlForwardHandler": true,
+    "chainResponseSendingHooks": false,
+    "return501ForUnsupportedHttpMethods": false
+  }
+}

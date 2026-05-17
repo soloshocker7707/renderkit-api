@@ -22,7 +22,7 @@ const TIER_CONFIGS = {
 export function getRateLimit(request: ZuploRequest, context: ZuploContext) {
   // Identify group - default to Free if not found
   const groups = request.user?.groups || [];
-  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter';
+  const activeTierName = (Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter') as keyof typeof TIER_CONFIGS;
   const config = TIER_CONFIGS[activeTierName];
 
   return {
@@ -35,7 +35,7 @@ export function getRateLimit(request: ZuploRequest, context: ZuploContext) {
 export function getQuota(request: ZuploRequest, context: ZuploContext) {
   // Identify group - default to Free if not found
   const groups = request.user?.groups || [];
-  const activeTierName = Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter';
+  const activeTierName = (Object.keys(TIER_CONFIGS).find(tier => groups.includes(tier)) || 'Starter') as keyof typeof TIER_CONFIGS;
   const config = TIER_CONFIGS[activeTierName];
 
   return {

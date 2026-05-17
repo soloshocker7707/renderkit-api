@@ -20,13 +20,14 @@
       "name": "dynamic-rate-limit",
       "policyType": "rate-limit-inbound",
       "handler": {
-        "export": "RateLimitInbound",
+        "export": "RateLimitInboundPolicy",
         "module": "$import(@zuplo/runtime)"
       },
       "options": {
         "rateLimitBy": "function",
-        "requestsPerMinute": 5,
-        "function": {
+        "requestsAllowed": 5,
+        "timeWindowMinutes": 1,
+        "identifier": {
           "export": "getRateLimit",
           "module": "$import(./modules/tiered-limits)"
         }
@@ -36,14 +37,13 @@
       "name": "dynamic-quota",
       "policyType": "quota-inbound",
       "handler": {
-        "export": "QuotaInbound",
+        "export": "QuotaInboundPolicy",
         "module": "$import(@zuplo/runtime)"
       },
       "options": {
         "quotaBy": "function",
-        "limit": 250,
-        "period": "30d",
-        "function": {
+        "period": "monthly",
+        "identifier": {
           "export": "getQuota",
           "module": "$import(./modules/tiered-limits)"
         }
