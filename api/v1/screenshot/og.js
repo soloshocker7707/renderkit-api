@@ -16,6 +16,24 @@ export default async function handler(req, res) {
   res.setHeader('X-Request-ID', requestId);
   if (!validateZuploSecret(req, res)) return;
 
+  // Robust Body Parser Fallback
+  let body = req.body;
+  if (!body) {
+    try {
+      const buffers = [];
+      for await (const chunk of req) {
+        buffers.push(chunk);
+      }
+      const raw = Buffer.concat(buffers).toString();
+      if (raw) {
+        body = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.error("Error parsing body manually:", e);
+    }
+  }
+  if (!body) body = {};
+
   const { 
     title, 
     description = '', 
@@ -24,7 +42,7 @@ export default async function handler(req, res) {
     logo_url,
     noCache = false,
     debug = false
-  } = req.body;
+  } = body;
 
   if (!title) {
     return res.status(400).json({ success: false, error: 'validation_error', message: 'title is required' });

@@ -22,6 +22,24 @@ export default async function handler(req, res) {
   // Authentication check
   if (!validateZuploSecret(req, res)) return;
 
+  // Robust Body Parser Fallback
+  let body = req.body;
+  if (!body) {
+    try {
+      const buffers = [];
+      for await (const chunk of req) {
+        buffers.push(chunk);
+      }
+      const raw = Buffer.concat(buffers).toString();
+      if (raw) {
+        body = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.error("Error parsing body manually:", e);
+    }
+  }
+  if (!body) body = {};
+
   const { 
     url, 
     template,
@@ -43,7 +61,7 @@ export default async function handler(req, res) {
     headers = {},
     noCache = false,
     colorScheme = 'light'
-  } = req.body;
+  } = body;
 
   // Feature 8: Cache Lookup
   const cacheKey = JSON.stringify({ url, template, data, html, width, height, fullPage, format, clean, freezeAnimations, css });
