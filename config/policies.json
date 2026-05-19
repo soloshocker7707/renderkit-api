@@ -1,6 +1,14 @@
 {
   "policies": [
     {
+      "name": "cors",
+      "policyType": "custom-code-inbound",
+      "handler": {
+        "export": "default",
+        "module": "$import(./modules/cors-handler)"
+      }
+    },
+    {
       "name": "supabase-auth",
       "policyType": "custom-code-inbound",
       "handler": {
@@ -21,15 +29,15 @@
       "policyType": "rate-limit-inbound",
       "handler": {
         "export": "RateLimitInboundPolicy",
-        "module": "$import(@zuplo/runtime)"
-      },
-      "options": {
-        "rateLimitBy": "function",
-        "requestsAllowed": 5,
-        "timeWindowMinutes": 1,
-        "identifier": {
-          "export": "getRateLimit",
-          "module": "$import(./modules/tiered-limits)"
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "rateLimitBy": "function",
+          "requestsAllowed": 5,
+          "timeWindowMinutes": 1,
+          "identifier": {
+            "export": "getRateLimit",
+            "module": "$import(./modules/tiered-limits)"
+          }
         }
       }
     },
@@ -38,23 +46,15 @@
       "policyType": "quota-inbound",
       "handler": {
         "export": "QuotaInboundPolicy",
-        "module": "$import(@zuplo/runtime)"
-      },
-      "options": {
-        "quotaBy": "function",
-        "period": "monthly",
-        "identifier": {
-          "export": "getQuota",
-          "module": "$import(./modules/tiered-limits)"
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "quotaBy": "function",
+          "period": "monthly",
+          "identifier": {
+            "export": "getQuota",
+            "module": "$import(./modules/tiered-limits)"
+          }
         }
-      }
-    },
-    {
-      "name": "cors",
-      "policyType": "custom-code-inbound",
-      "handler": {
-        "export": "default",
-        "module": "$import(./modules/cors-handler)"
       }
     }
   ]

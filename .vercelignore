@@ -1,0 +1,12 @@
+node_modules/
+docs/
+dist/
+.zuplo/
+.git/
+.vscode/
+test_capture.png
+test_og.png
+test_pdf.pdf
+test_screenshot.jpg
+*.log
+vercel_deploy.log

@@ -1,0 +1,31 @@
+Retrieving project…
+Deploying salmasana0238-2593s-projects/renderkit-api
+Uploading [--------------------] (0.0B/3.2MB)
+Uploading [=====---------------] (824.4KB/3.2MB)
+Uploading [==========----------] (1.6MB/3.2MB)
+Uploading [===============-----] (2.4MB/3.2MB)
+Uploading [====================] (3.2MB/3.2MB)
+  Inspect     https://vercel.com/salmasana0238-2593s-projects/renderkit-api/6MpK99dsVTD5SMEQyiHFBV5vvFEq
+▲ Production  https://renderkit-e5pj7mram-salmasana0238-2593s-projects.vercel.app
+https://renderkit-e5pj7mram-salmasana0238-2593s-projects.vercel.appBuilding…
+Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Retrieving list of deployment files...
+Downloading 46 deployment files...
+Restored build cache from previous deployment (33iWswdriFNfhnTXYBa82TN6TuCz)
+Warning: "vercel" found in project dependencies and will be ignored.
+Running "vercel build"
+(node:18) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Vercel CLI 53.3.2
+Installing dependencies...
+npm warn deprecated tar@7.5.7: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+added 232 packages, and removed 524 packages in 9s
+165 packages are looking for funding
+run `npm fund` for details
+run `npm fund` for details
+Build Completed in /vercel/output [22s]
+Deploying outputs...
+Deployment completed
+Creating build cache...
+Error: request to https://api.vercel.com/v13/deployments/dpl_6MpK99dsVTD5SMEQyiHFBV5vvFEq?teamId=team_1UL12qZ9d4HCkK3zDqOjnip9 failed, reason: read ETIMEDOUT

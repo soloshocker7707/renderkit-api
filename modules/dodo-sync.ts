@@ -64,7 +64,8 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
       message: "Sync signal received" 
     };
   } catch (err) {
-    context.log.error(`Failed to sync user ${email}: ${err.message}`);
-    return { status: "error", message: err.message };
+    const message = err instanceof Error ? err.message : String(err);
+    context.log.error(`Failed to sync user ${email}: ${message}`);
+    return { status: "error", message };
   }
 }
