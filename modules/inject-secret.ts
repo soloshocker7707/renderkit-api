@@ -1,4 +1,4 @@
-import { ZuploContext, ZuploRequest } from "@zuplo/runtime";
+import { ZuploContext, ZuploRequest, environment } from "@zuplo/runtime";
 
 export default async function (
   request: ZuploRequest,
@@ -6,7 +6,7 @@ export default async function (
   options: any,
   policyName: string
 ) {
-  const secret = process.env.SECRET_ZUPLO || "";
+  const secret = (environment as any).SECRET_ZUPLO || "";
   
   request.headers.set("x-zuplo-secret", secret.trim());
   return request;
