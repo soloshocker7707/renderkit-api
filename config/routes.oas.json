@@ -22,6 +22,8 @@
             "inbound": [
               "cors",
               "supabase-auth",
+              "dynamic-quota",
+              "dynamic-rate-limit",
               "inject-zuplo-secret"
             ]
           }
@@ -47,6 +49,8 @@
             "inbound": [
               "cors",
               "supabase-auth",
+              "dynamic-quota",
+              "dynamic-rate-limit",
               "inject-zuplo-secret"
             ]
           }
@@ -72,6 +76,8 @@
             "inbound": [
               "cors",
               "supabase-auth",
+              "dynamic-quota",
+              "dynamic-rate-limit",
               "inject-zuplo-secret"
             ]
           }

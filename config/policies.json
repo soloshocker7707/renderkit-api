@@ -9,6 +9,26 @@
       }
     },
     {
+      "name": "dynamic-rate-limit",
+      "policyType": "rate-limit-v1",
+      "options": {
+        "rateLimitOption": {
+          "export": "getRateLimit",
+          "module": "$import(./modules/tiered-limits)"
+        }
+      }
+    },
+    {
+      "name": "dynamic-quota",
+      "policyType": "quota-v1",
+      "options": {
+        "quotaOption": {
+          "export": "getQuota",
+          "module": "$import(./modules/tiered-limits)"
+        }
+      }
+    },
+    {
       "name": "inject-zuplo-secret",
       "policyType": "custom-code-inbound",
       "handler": {
