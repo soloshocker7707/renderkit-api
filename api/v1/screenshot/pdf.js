@@ -1,13 +1,14 @@
-import { getBrowser, closeBrowser } from '../../../lib/browser.js';
+import { getPage, releasePage } from '../../../lib/pagePool.js';
+import { resetIdleTimer } from '../../../lib/browser.js';
+import { closeBrowser } from '../../../lib/browser.js';
+import { get as cacheGet, set as cacheSet, has as cacheHas } from '../../../lib/cache.js';
 import { validateZuploSecret, setCorsHeaders } from '../../../lib/auth.js';
 import { applyStealth } from '../../../lib/stealth.js';
 import { Renderer, renderTemplate } from '../../../lib/renderer.js';
 import fs from 'fs';
 import path from 'path';
 
-// Feature 8: Simple In-Memory Cache
-const cache = new Map();
-const CACHE_TTL = 1000 * 60 * 5;
+
 
 export default async function handler(req, res) {
   const startTime = Date.now();
@@ -56,15 +57,16 @@ export default async function handler(req, res) {
     noCache = false
   } = body;
 
-  const cacheKey = JSON.stringify({ url, template, data, html, width, height, format, landscape, clean, css });
-  if (!noCache && cache.has(cacheKey)) {
-    const cached = cache.get(cacheKey);
-    if (Date.now() - cached.timestamp < CACHE_TTL) {
+  const cacheKey = JSON.stringify({ url, template, data, html, width, height, format, landscape, printBackground, css });
+
+  if (!noCache && await cacheHas(cacheKey)) {
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
       res.setHeader('X-Cache', 'HIT');
       res.setHeader('X-Render-Time', '0ms');
-      if (debug) return res.status(200).json(cached.data);
+      if (debug) return res.status(200).json(cached);
       
-      const buffer = Buffer.from(cached.data.pdf_base64, 'base64');
+      const buffer = Buffer.from(cached.pdf_base64, 'base64');
       res.setHeader('Content-Type', 'application/pdf');
       return res.end(buffer, 'binary');
     }
@@ -81,8 +83,9 @@ export default async function handler(req, res) {
     let page = null;
 
     try {
-      const browser = await getBrowser();
-      page = await browser.newPage();
+      const page = await getPage();
+      // Block ads/tracking resources to speed up load
+      await blockAds(page);
       
       const renderer = new Renderer(page, { clean, freezeAnimations, css, wait: 'smart' });
 
@@ -111,7 +114,9 @@ export default async function handler(req, res) {
         printBackground: !!printBackground,
       });
 
-      await page.close();
+      await releasePage(page);
+// Reset idle timer so browser stays warm
+resetIdleTimer();
 
       const renderTime = Date.now() - startTime;
       res.setHeader('X-Render-Time', `${renderTime}ms`);
@@ -127,7 +132,7 @@ export default async function handler(req, res) {
       };
 
       if (debug) responseData.debug = debugInfo;
-      cache.set(cacheKey, { timestamp: Date.now(), data: responseData });
+      cacheSet(cacheKey, responseData);
 
       if (req.headers['accept']?.includes('application/pdf')) {
         res.setHeader('Content-Type', 'application/pdf');
@@ -138,7 +143,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
       lastError = error;
-      if (page) await page.close().catch(() => {});
+      if (page) await releasePage(page).catch(() => {});
       if (error.message.includes('Target closed')) await closeBrowser(true);
       if (attempt < maxRetries) continue;
     }

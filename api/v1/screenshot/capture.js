@@ -1,13 +1,15 @@
-import { getBrowser, closeBrowser } from '../../../lib/browser.js';
+import { getPage, releasePage } from '../../../lib/pagePool.js';
+import { resetIdleTimer } from '../../../lib/browser.js';
+import { closeBrowser } from '../../../lib/browser.js';
+import { get as cacheGet, set as cacheSet, has as cacheHas } from '../../../lib/cache.js';
+import { blockAds } from '../../../lib/blockAds.js';
 import { validateZuploSecret, setCorsHeaders } from '../../../lib/auth.js';
 import { applyStealth } from '../../../lib/stealth.js';
 import { Renderer, renderTemplate } from '../../../lib/renderer.js';
 import fs from 'fs';
 import path from 'path';
 
-// Feature 8: Simple In-Memory Cache (Persists in warm lambda)
-const cache = new Map();
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 
 export default async function handler(req, res) {
   const startTime = Date.now();
@@ -51,8 +53,8 @@ export default async function handler(req, res) {
     waitFor = 0, 
     waitForSelector,
     wait = 'networkidle2', 
-    format = 'png', 
-    quality = 90,
+    format = 'jpeg', 
+    quality = 70,
     stealth = true,
     clean = false,
     freezeAnimations = true,
@@ -65,14 +67,14 @@ export default async function handler(req, res) {
 
   // Feature 8: Cache Lookup
   const cacheKey = JSON.stringify({ url, template, data, html, width, height, fullPage, format, clean, freezeAnimations, css });
-  if (!noCache && cache.has(cacheKey)) {
-    const cached = cache.get(cacheKey);
-    if (Date.now() - cached.timestamp < CACHE_TTL) {
+  if (!noCache && await cacheHas(cacheKey)) {
+    const cached = await cacheGet(cacheKey);
+    if (cached) {
       res.setHeader('X-Cache', 'HIT');
       res.setHeader('X-Render-Time', '0ms');
-      if (debug) return res.status(200).json({ ...cached.data, debug: { cached: true } });
+      if (debug) return res.status(200).json({ ...cached, debug: { cached: true } });
       
-      const buffer = Buffer.from(cached.data.image_base64, 'base64');
+      const buffer = Buffer.from(cached.image_base64, 'base64');
       res.setHeader('Content-Type', format === 'jpeg' ? 'image/jpeg' : 'image/png');
       return res.end(buffer, 'binary');
     }
@@ -90,12 +92,12 @@ export default async function handler(req, res) {
   const maxRetries = 2;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    let browser = null;
     let page = null;
 
     try {
-      browser = await getBrowser();
-      page = await browser.newPage();
+      page = await getPage();
+      // Block ads/tracking resources to speed up load
+      await blockAds(page);
       
       const renderer = new Renderer(page, { 
         clean, 
@@ -160,7 +162,9 @@ export default async function handler(req, res) {
         encoding: 'base64'
       });
 
-      await page.close();
+      await releasePage(page);
+      // Reset idle timer so browser stays warm for subsequent requests
+      resetIdleTimer();
 
       const renderTime = Date.now() - startTime;
       res.setHeader('X-Render-Time', `${renderTime}ms`);
@@ -184,7 +188,7 @@ export default async function handler(req, res) {
       }
 
       // Cache the result
-      cache.set(cacheKey, { timestamp: Date.now(), data: responseData });
+      cacheSet(cacheKey, responseData);
 
       // Return binary if requested or JSON default
       if (req.headers['accept']?.includes('image/')) {
@@ -197,9 +201,9 @@ export default async function handler(req, res) {
 
     } catch (error) {
       lastError = error;
-      if (page) await page.close().catch(() => {});
+      if (page) await releasePage(page).catch(() => {});
       if (error.message.includes('Target closed') || error.message.includes('Session closed')) {
-        await closeBrowser(true); 
+        await closeBrowser(true);
       }
       if (attempt < maxRetries) {
         await new Promise(r => setTimeout(r, 500));

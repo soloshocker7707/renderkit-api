@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RenderKit API | Screenshots Without Compromise</title>
+    <title>RenderKit API – Simple, Scalable Screenshots</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,18 +63,18 @@
 
     <main id="landing-content">
         <section class="hero" style="padding: 6rem 0;">
-            <div class="container">
-                <div class="hero-content" style="border-left: 8px solid var(--accent); padding-left: 3rem;">
-                    <div class="section-tag">v1.2.0 Stable</div>
-                    <h1 style="font-size: 6rem;">RENDER <br>WITHOUT <br><span>LIMITS.</span></h1>
-                    <p class="hero-subtitle" style="font-size: 1.2rem; margin-bottom: 3rem; max-width: 800px;">Headless browser infrastructure designed for extreme scale. Strip banners, bypass bot-detection, and generate pixel-perfect renders in 142ms.</p>
-                    <div class="cta-group">
-                        <button id="hero-signup" class="btn btn-primary">Initialize Access</button>
-                        <a href="#integration" class="btn btn-secondary" style="text-decoration: none; margin-left: 1rem;">Documentation</a>
-                    </div>
-                </div>
+    <div class="container">
+        <div class="hero-content" style="border-left: 8px solid var(--accent); padding-left: 3rem;">
+            <div class="section-tag">v1.2.0 Stable</div>
+        <h1 style="font-size: 6rem;">Render Screenshots</h1>
+            <p class="hero-subtitle" style="font-size: 1.2rem; margin-bottom: 3rem; max-width: 800px;">Scalable headless browser API for fast, clean screenshots and PDFs.</p>
+            <div class="cta-group">
+                <button id="hero-signup" class="btn btn-primary">Initialize Access</button>
+                <a href="#integration" class="btn btn-secondary" style="text-decoration: none; margin-left: 1rem;">Documentation</a>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
         <div class="marquee" style="padding: 1rem 0; font-size: 1.2rem;">
             <div class="marquee-content">
@@ -85,8 +85,8 @@
         <section id="integration" class="integration-section" style="padding: 8rem 0;">
             <div class="container">
                 <div class="section-tag">Integration</div>
-                <h2 style="font-size: 4rem; font-weight: 900; margin-bottom: 3rem;">BUILT FOR <span>PIPELINES.</span></h2>
-                
+                <h2 style="font-size: 4rem; font-weight: 900; margin-bottom: 3rem;">Seamless Integration.</h2>
+                <p style="font-size:1rem; color: var(--text-dim); max-width:800px; margin-bottom:2rem;">Integrate with our clean, RESTful API—just POST JSON to the endpoint with your API key and get a screenshot or PDF in milliseconds.</p>
                 <div class="integration-tabs" style="box-shadow: 12px 12px 0 var(--accent);">
                     <div class="tab-headers">
                         <button class="tab-btn active" data-tab="curl" style="padding: 1.5rem 3rem;">CURL</button>
@@ -118,19 +118,19 @@
                     <div class="feature-item" style="padding: 2.5rem; border: 1px solid #222;">
                         <div style="font-size: 0.7rem; font-weight: 900; color: var(--accent); margin-bottom: 1rem;">// 01_HEURISTICS</div>
                         <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">AUTO CLEAN ENGINE</h3>
-                        <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Our proprietary heuristics engine automatically identifies and strips cookie banners, popups, and intrusive overlays from the render tree before capture, ensuring 100% pure content extraction every time.</p>
+                         <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Our engine removes banners and popups automatically for clean captures.</p>
                         <div class="code-snippet" style="margin-top: 1.5rem;">"clean": true</div>
                     </div>
                     <div class="feature-item" style="padding: 2.5rem; border: 1px solid #222;">
                         <div style="font-size: 0.7rem; font-weight: 900; color: var(--accent); margin-bottom: 1rem;">// 02_SYNCHRONIZATION</div>
                         <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">SMART WAIT V2</h3>
-                        <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Move beyond simple timeouts. Smart Wait monitors network idle states, font loading, and layout stabilization to ensure that even the most complex React/Vue applications are fully hydrated before the shutter fires.</p>
+                         <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Smart Wait ensures pages are fully loaded before capture.</p>
                         <div class="code-snippet" style="margin-top: 1.5rem;">"wait": "smart"</div>
                     </div>
                     <div class="feature-item" style="padding: 2.5rem; border: 1px solid #222;">
                         <div style="font-size: 0.7rem; font-weight: 900; color: var(--accent); margin-bottom: 1rem;">// 03_FINGERPRINTING</div>
                         <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">STEALTH PIPELINE</h3>
-                        <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Bypass anti-bot measures and headless browser detection with our integrated stealth layer. We emulate human-like hardware signatures, WebGL fingerprints, and network headers to guarantee accessibility.</p>
+                         <p style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">Stealth mode bypasses bot detection for reliable rendering.</p>
                         <div class="code-snippet" style="margin-top: 1.5rem;">"stealth": true</div>
                     </div>
                     <div class="feature-item" style="padding: 2.5rem; border: 1px solid #222;">
