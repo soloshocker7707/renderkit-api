@@ -1,25 +1,27 @@
-import { getPage, releasePage } from '../../../lib/pagePool.js';
-import { resetIdleTimer } from '../../../lib/browser.js';
-import { closeBrowser } from '../../../lib/browser.js';
-import { get as cacheGet, set as cacheSet, has as cacheHas } from '../../../lib/cache.js';
-import { blockAds } from '../../../lib/blockAds.js';
-import { validateZuploSecret, setCorsHeaders } from '../../../lib/auth.js';
-import { applyStealth } from '../../../lib/stealth.js';
-import { Renderer, renderTemplate } from '../../../lib/renderer.js';
-import fs from 'fs';
-import path from 'path';
-
-
+import { getPage, releasePage } from "../../../lib/pagePool.js";
+import { resetIdleTimer } from "../../../lib/browser.js";
+import { closeBrowser } from "../../../lib/browser.js";
+import {
+  get as cacheGet,
+  set as cacheSet,
+  has as cacheHas,
+} from "../../../lib/cache.js";
+import { blockAds } from "../../../lib/blockAds.js";
+import { validateZuploSecret, setCorsHeaders } from "../../../lib/auth.js";
+import { applyStealth } from "../../../lib/stealth.js";
+import { Renderer, renderTemplate } from "../../../lib/renderer.js";
+import fs from "fs";
+import path from "path";
 
 export default async function handler(req, res) {
   const startTime = Date.now();
   const requestId = Math.random().toString(36).substring(7);
-  
+
   setCorsHeaders(res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === "OPTIONS") return res.status(200).end();
 
   // Feature 9: Proper Headers
-  res.setHeader('X-Request-ID', requestId);
+  res.setHeader("X-Request-ID", requestId);
 
   // Authentication check
   if (!validateZuploSecret(req, res)) return;
@@ -42,18 +44,18 @@ export default async function handler(req, res) {
   }
   if (!body) body = {};
 
-  const { 
-    url, 
+  const {
+    url,
     template,
     data = {},
     html,
-    width = 1280, 
-    height = 800, 
-    fullPage = false, 
-    waitFor = 0, 
+    width = 1280,
+    height = 800,
+    fullPage = false,
+    waitFor = 0,
     waitForSelector,
-    wait = 'networkidle2', 
-    format = 'jpeg', 
+    wait = "networkidle2",
+    format = "jpeg",
     quality = 70,
     stealth = true,
     clean = false,
@@ -62,29 +64,52 @@ export default async function handler(req, res) {
     debug = false,
     headers = {},
     noCache = false,
-    colorScheme = 'light'
+    colorScheme = "light",
   } = body;
 
   // Feature 8: Cache Lookup
-  const cacheKey = JSON.stringify({ url, template, data, html, width, height, fullPage, format, clean, freezeAnimations, css });
-  if (!noCache && await cacheHas(cacheKey)) {
+  const cacheKey = JSON.stringify({
+    url,
+    template,
+    data,
+    html,
+    width,
+    height,
+    fullPage,
+    waitFor,
+    waitForSelector,
+    wait,
+    format,
+    quality,
+    stealth,
+    clean,
+    freezeAnimations,
+    css,
+    headers,
+    colorScheme,
+  });
+  if (!noCache && (await cacheHas(cacheKey))) {
     const cached = await cacheGet(cacheKey);
     if (cached) {
-      res.setHeader('X-Cache', 'HIT');
-      res.setHeader('X-Render-Time', '0ms');
-      if (debug) return res.status(200).json({ ...cached, debug: { cached: true } });
-      
-      const buffer = Buffer.from(cached.image_base64, 'base64');
-      res.setHeader('Content-Type', format === 'jpeg' ? 'image/jpeg' : 'image/png');
-      return res.end(buffer, 'binary');
+      res.setHeader("X-Cache", "HIT");
+      res.setHeader("X-Render-Time", "0ms");
+      if (debug)
+        return res.status(200).json({ ...cached, debug: { cached: true } });
+
+      const buffer = Buffer.from(cached.image_base64, "base64");
+      res.setHeader(
+        "Content-Type",
+        format === "jpeg" ? "image/jpeg" : "image/png",
+      );
+      return res.end(buffer, "binary");
     }
   }
 
   if (!url && !template && !html) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'validation_error', 
-      message: 'url, template, or html is required' 
+    return res.status(400).json({
+      success: false,
+      error: "validation_error",
+      message: "url, template, or html is required",
     });
   }
 
@@ -98,43 +123,58 @@ export default async function handler(req, res) {
       page = await getPage();
       // Block ads/tracking resources to speed up load
       await blockAds(page);
-      
-      const renderer = new Renderer(page, { 
-        clean, 
-        freezeAnimations, 
-        css, 
-        wait, 
+
+      const renderer = new Renderer(page, {
+        clean,
+        freezeAnimations,
+        css,
+        wait,
         fullPage,
-        colorScheme
+        colorScheme,
       });
 
       // Feature 5: Template Screenshot handling
       if (template) {
         try {
-          const templatePath = path.join(process.cwd(), 'templates', `${template}.html`);
+          const templatePath = path.join(
+            process.cwd(),
+            "templates",
+            `${template}.html`,
+          );
           if (fs.existsSync(templatePath)) {
-            const rawTemplate = fs.readFileSync(templatePath, 'utf8');
+            const rawTemplate = fs.readFileSync(templatePath, "utf8");
             const processedHtml = renderTemplate(rawTemplate, data);
-            await page.setContent(processedHtml, { waitUntil: 'networkidle0' });
+            await page.setContent(processedHtml, { waitUntil: "networkidle0" });
           } else {
             throw new Error(`Template ${template} not found`);
           }
         } catch (e) {
-          return res.status(404).json({ success: false, error: 'template_not_found', message: e.message });
+          return res
+            .status(404)
+            .json({
+              success: false,
+              error: "template_not_found",
+              message: e.message,
+            });
         }
       } else if (html) {
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.setContent(html, { waitUntil: "networkidle0" });
       } else {
         // Standard URL navigation
         if (stealth) await applyStealth(page);
-        if (headers && Object.keys(headers).length > 0) await page.setExtraHTTPHeaders(headers);
+        if (headers && Object.keys(headers).length > 0)
+          await page.setExtraHTTPHeaders(headers);
 
-        await page.setViewport({ width: Number(width), height: Number(height) });
-        
+        await page.setViewport({
+          width: Number(width),
+          height: Number(height),
+        });
+
         try {
-          await page.goto(url, { 
-            waitUntil: wait === 'smart' ? 'networkidle2' : (wait || 'networkidle2'), 
-            timeout: 25000 
+          await page.goto(url, {
+            waitUntil:
+              wait === "smart" ? "networkidle2" : wait || "networkidle2",
+            timeout: 25000,
           });
         } catch (gotoError) {
           console.warn(`Navigation timeout. Proceeding.`);
@@ -152,14 +192,14 @@ export default async function handler(req, res) {
       }
 
       if (waitFor > 0) {
-        await new Promise(r => setTimeout(r, Number(waitFor)));
+        await new Promise((r) => setTimeout(r, Number(waitFor)));
       }
 
       const screenshot = await page.screenshot({
         fullPage: !!fullPage,
-        type: format === 'jpeg' ? 'jpeg' : 'png',
-        quality: format === 'jpeg' ? Number(quality) : undefined,
-        encoding: 'base64'
+        type: format === "jpeg" ? "jpeg" : "png",
+        quality: format === "jpeg" ? Number(quality) : undefined,
+        encoding: "base64",
       });
 
       await releasePage(page);
@@ -167,8 +207,8 @@ export default async function handler(req, res) {
       resetIdleTimer();
 
       const renderTime = Date.now() - startTime;
-      res.setHeader('X-Render-Time', `${renderTime}ms`);
-      res.setHeader('X-Cache', 'MISS');
+      res.setHeader("X-Render-Time", `${renderTime}ms`);
+      res.setHeader("X-Cache", "MISS");
 
       const responseData = {
         success: true,
@@ -176,10 +216,10 @@ export default async function handler(req, res) {
         format,
         width: Number(width),
         height: Number(height),
-        url: url || 'template',
+        url: url || "template",
         render_time: renderTime,
         request_id: requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       // Feature 6: Debug Mode
@@ -191,31 +231,36 @@ export default async function handler(req, res) {
       cacheSet(cacheKey, responseData);
 
       // Return binary if requested or JSON default
-      if (req.headers['accept']?.includes('image/')) {
-        const buffer = Buffer.from(screenshot, 'base64');
-        res.setHeader('Content-Type', format === 'jpeg' ? 'image/jpeg' : 'image/png');
-        return res.end(buffer, 'binary');
+      if (req.headers["accept"]?.includes("image/")) {
+        const buffer = Buffer.from(screenshot, "base64");
+        res.setHeader(
+          "Content-Type",
+          format === "jpeg" ? "image/jpeg" : "image/png",
+        );
+        return res.end(buffer, "binary");
       }
 
       return res.status(200).json(responseData);
-
     } catch (error) {
       lastError = error;
       if (page) await releasePage(page).catch(() => {});
-      if (error.message.includes('Target closed') || error.message.includes('Session closed')) {
+      if (
+        error.message.includes("Target closed") ||
+        error.message.includes("Session closed")
+      ) {
         await closeBrowser(true);
       }
       if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 500));
         continue;
       }
     }
   }
 
-  return res.status(500).json({ 
+  return res.status(500).json({
     success: false,
-    error: 'render_failed', 
+    error: "render_failed",
     message: `All attempts failed. Last error: ${lastError.message}`,
-    request_id: requestId
+    request_id: requestId,
   });
 }

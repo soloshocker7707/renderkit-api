@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- SUPABASE CONFIGURATION ---
     // User needs to fill these from Supabase Project Settings
-    const SUPABASE_URL = 'https://cvsdvxygucjbbtyydgmx.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_C32o3FATbcSmVNhxZyCRgA_0pjUX_Lr'; // User: Fill this in!
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    const config = window.RENDERKIT_CONFIG || {};
+    const SUPABASE_URL = config.SUPABASE_URL;
+    const SUPABASE_ANON_KEY = config.SUPABASE_ANON_KEY;
+    const supabase = window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
 
     // --- UI ELEMENTS ---
     const authBtn = document.getElementById('auth-btn');
@@ -22,29 +25,25 @@ document.addEventListener('DOMContentLoaded', () => {
             authBtn.textContent = 'Dashboard';
             landingContent.style.display = 'none';
             dashboard.style.display = 'block';
-            
+
             // Proactive Profile Fetching
             try {
                 let { data, error } = await supabase
                     .from('profiles')
                     .select('*')
                     .single();
-                
+
                 // If profile doesn't exist (can happen right after signup if trigger delay)
                 if (!data && user) {
-                    console.log('Profile not found, attempting to create...');
-                    const newKey = 'pk_' + Math.random().toString(36).substring(2, 15);
-                    const { data: newData, error: createError } = await supabase
-                        .from('profiles')
-                        .insert([{ id: user.id, api_key: newKey, tier: 'Starter' }])
-                        .select()
-                        .single();
-                    data = newData;
+                    console.log('Profile not found. Waiting for server-side profile provisioning.');
                 }
 
                 if (data) {
-                    document.getElementById('display-api-key').textContent = data.api_key;
-                    document.getElementById('user-tier').textContent = data.tier;
+                    document.getElementById('display-api-key').textContent = data.api_key || 'Pending provisioning';
+                    document.getElementById('user-tier').textContent = data.tier || 'Starter';
+                } else {
+                    document.getElementById('display-api-key').textContent = 'Pending provisioning';
+                    document.getElementById('user-tier').textContent = 'Starter';
                 }
             } catch (err) {
                 console.error('Profile Load Error:', err);
@@ -83,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const submitBtn = document.getElementById('auth-submit');
-            
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Initializing...';
 
@@ -93,13 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (error) throw error;
                     window.location.href = 'index.html';
                 } else {
-                    const { error } = await supabase.auth.signUp({ 
-                        email, 
+                    const { error } = await supabase.auth.signUp({
+                        email,
                         password,
                         options: { emailRedirectTo: window.location.origin }
                     });
                     if (error) throw error;
-                    alert('Node Registered! Please check your email for activation.');
+                    alert('Account created. Please check your email for activation. API keys should be generated server-side before production use.');
                 }
             } catch (err) {
                 alert('Verification Failed: ' + err.message);
@@ -147,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const tabId = btn.getAttribute('data-tab');
-            
+
             // Update buttons
             tabBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             // Update content
             tabContents.forEach(content => {
                 content.classList.remove('active');

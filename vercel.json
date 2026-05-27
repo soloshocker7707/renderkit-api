@@ -1,12 +1,8 @@
 {
-  "installCommand": "npm ci --ignore-scripts",
-  "builds": [
-    { "src": "public/**", "use": "@vercel/static" },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/v1/(.*)", "dest": "/api/v1/$1" },
-    { "src": "/health", "dest": "/api/health" }
+  "installCommand": "npm install --ignore-scripts",
+  "framework": null,
+  "rewrites": [
+    { "source": "/v1/:path*", "destination": "/api/v1/:path*" },
+    { "source": "/health", "destination": "/api/health" }
   ]
 }

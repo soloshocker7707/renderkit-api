@@ -1,4 +1,4 @@
-import type { ZudokuConfig } from "zudoku";
+type ZudokuConfig = any;
 
 /**
  * Developer Portal Configuration
@@ -7,7 +7,7 @@ import type { ZudokuConfig } from "zudoku";
  */
 const config: ZudokuConfig = {
   site: {
-    title: "My Developer Portal",
+    title: "RenderKit API Docs",
     logo: {
       src: {
         light: "https://cdn.zuplo.com/assets/my-dev-portal-light.svg",
@@ -16,8 +16,8 @@ const config: ZudokuConfig = {
     },
   },
   metadata: {
-    title: "Developer Portal",
-    description: "Developer Portal",
+    title: "RenderKit API Documentation",
+    description: "Documentation for the RenderKit screenshot, PDF, and OG image API.",
   },
   navigation: [
     {
@@ -47,12 +47,12 @@ const config: ZudokuConfig = {
           items: [
             {
               type: "link",
-              label: "Zuplo Docs",
-              to: "https://zuplo.com/docs/dev-portal/introduction",
+              label: "RenderKit API",
+              to: "/api",
             },
             {
               type: "link",
-              label: "Developer Portal Docs",
+              label: "Zuplo Developer Portal Docs",
               to: "https://zuplo.com/docs/dev-portal/introduction",
             },
           ],
@@ -73,18 +73,7 @@ const config: ZudokuConfig = {
       path: "api",
     },
   ],
-  authentication: {
-    // IMPORTANT: This is a demo Auth0 configuration.
-    // In a real application, you should replace these values with your own
-    // identity provider's configuration.
-    // This configuration WILL NOT WORK with custom domains.
-    // For more information, see:
-    // https://zuplo.com/docs/dev-portal/zudoku/configuration/authentication
-    type: "auth0",
-    domain: "auth.zuplo.site",
-    clientId: "f8I87rdsCRo4nU2FHf0fHVwA9P7xi7Ml",
-    audience: "https://api.example.com/",
-  },
+  // Configure developer portal authentication here before production use.
   apiKeys: {
     enabled: true,
   },

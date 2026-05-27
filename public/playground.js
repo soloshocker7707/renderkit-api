@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const SUPABASE_URL = 'https://cvsdvxygucjbbtyydgmx.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_C32o3FATbcSmVNhxZyCRgA_0pjUX_Lr';
-    const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    const config = window.RENDERKIT_CONFIG || {};
+    const SUPABASE_URL = config.SUPABASE_URL;
+    const SUPABASE_ANON_KEY = config.SUPABASE_ANON_KEY;
+    const API_BASE_URL = config.API_BASE_URL || window.location.origin;
+    const supabase = window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
 
     const renderBtn = document.getElementById('render-btn');
     const targetUrlInput = document.getElementById('target-url');
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         placeholderText.style.display = 'none';
         errorDisplay.style.display = 'none';
         debugInfo.style.display = 'none';
-        
+
         const options = {
             url: url,
             clean: document.getElementById('opt-clean').checked,
@@ -55,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Call our Zuplo API
-            const response = await fetch('https://pint-api-panel-main-87c9a67.zuplo.app/v1/screenshot/capture', {
+            const response = await fetch(`${API_BASE_URL}/v1/screenshot/capture`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 previewArea.innerHTML = `<img src="data:image/png;base64,${result.image_base64}" alt="Render result">`;
-                
+
                 if (result.debug) {
                     debugInfo.style.display = 'block';
                     debugContent.innerHTML = `<pre>${JSON.stringify(result.debug, null, 2)}</pre>`;

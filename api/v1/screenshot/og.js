@@ -1,6 +1,6 @@
-import { getBrowser, closeBrowser } from '../../../lib/browser.js';
-import { validateZuploSecret, setCorsHeaders } from '../../../lib/auth.js';
-import { Renderer } from '../../../lib/renderer.js';
+import { getBrowser, closeBrowser } from "../../../lib/browser.js";
+import { validateZuploSecret, setCorsHeaders } from "../../../lib/auth.js";
+import { Renderer } from "../../../lib/renderer.js";
 
 // Feature 8: Simple In-Memory Cache
 const cache = new Map();
@@ -9,11 +9,11 @@ const CACHE_TTL = 1000 * 60 * 60; // 1 hour for OG images
 export default async function handler(req, res) {
   const startTime = Date.now();
   const requestId = Math.random().toString(36).substring(7);
-  
-  setCorsHeaders(res);
-  if (req.method === 'OPTIONS') return res.status(200).end();
 
-  res.setHeader('X-Request-ID', requestId);
+  setCorsHeaders(res);
+  if (req.method === "OPTIONS") return res.status(200).end();
+
+  res.setHeader("X-Request-ID", requestId);
   if (!validateZuploSecret(req, res)) return;
 
   // Robust Body Parser Fallback
@@ -34,35 +34,50 @@ export default async function handler(req, res) {
   }
   if (!body) body = {};
 
-  const { 
-    title, 
-    description = '', 
-    theme = 'dark', 
-    background_color, 
+  const {
+    title,
+    description = "",
+    theme = "dark",
+    background_color,
     logo_url,
     noCache = false,
-    debug = false
+    debug = false,
   } = body;
 
   if (!title) {
-    return res.status(400).json({ success: false, error: 'validation_error', message: 'title is required' });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: "validation_error",
+        message: "title is required",
+      });
   }
 
-  const cacheKey = JSON.stringify({ title, description, theme, background_color, logo_url });
+  const cacheKey = JSON.stringify({
+    title,
+    description,
+    theme,
+    background_color,
+    logo_url,
+  });
   if (!noCache && cache.has(cacheKey)) {
     const cached = cache.get(cacheKey);
-    res.setHeader('X-Cache', 'HIT');
-    res.setHeader('X-Render-Time', '0ms');
-    if (debug) return res.status(200).json(cached.data);
-    const buffer = Buffer.from(cached.data.image_base64, 'base64');
-    res.setHeader('Content-Type', 'image/png');
-    return res.end(buffer, 'binary');
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      res.setHeader("X-Cache", "HIT");
+      res.setHeader("X-Render-Time", "0ms");
+      if (debug) return res.status(200).json(cached.data);
+      const buffer = Buffer.from(cached.data.image_base64, "base64");
+      res.setHeader("Content-Type", "image/png");
+      return res.end(buffer, "binary");
+    }
+    cache.delete(cacheKey);
   }
 
   const themes = {
-    light: { bg: '#ffffff', text: '#000000', accent: '#00FF41' },
-    dark: { bg: '#000000', text: '#ffffff', accent: '#00FF41' },
-    green: { bg: '#00FF41', text: '#000000', accent: '#000000' }
+    light: { bg: "#ffffff", text: "#000000", accent: "#00FF41" },
+    dark: { bg: "#000000", text: "#ffffff", accent: "#00FF41" },
+    green: { bg: "#00FF41", text: "#000000", accent: "#000000" },
   };
 
   const currentTheme = themes[theme] || themes.dark;
@@ -87,7 +102,8 @@ export default async function handler(req, res) {
     </head>
     <body>
       <h1>${title}</h1>
-      ${description ? `<p>${description}</p>` : ''}
+      ${description ? `<p>${description}</p>` : ""}
+      ${logo_url ? `<img src="${logo_url}" alt="Logo" style="position:absolute;bottom:40px;right:60px;max-width:140px;max-height:80px;object-fit:contain;" />` : ""}
     </body>
     </html>
   `;
@@ -101,41 +117,50 @@ export default async function handler(req, res) {
       const browser = await getBrowser();
       page = await browser.newPage();
       await page.setViewport({ width: 1200, height: 630 });
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setContent(html, { waitUntil: "networkidle0" });
 
-      const renderer = new Renderer(page, { wait: 'smart' });
+      const renderer = new Renderer(page, { wait: "smart" });
       const debugInfo = await renderer.process();
 
-      const screenshot = await page.screenshot({ type: 'png', encoding: 'base64' });
+      const screenshot = await page.screenshot({
+        type: "png",
+        encoding: "base64",
+      });
       await page.close();
 
       const renderTime = Date.now() - startTime;
       const responseData = {
         success: true,
         image_base64: screenshot,
-        width: 1200, height: 630,
+        width: 1200,
+        height: 630,
         render_time: renderTime,
         request_id: requestId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       if (debug) responseData.debug = debugInfo;
       cache.set(cacheKey, { timestamp: Date.now(), data: responseData });
 
-      if (req.headers['accept']?.includes('image/')) {
-        res.setHeader('Content-Type', 'image/png');
-        return res.end(Buffer.from(screenshot, 'base64'), 'binary');
+      if (req.headers["accept"]?.includes("image/")) {
+        res.setHeader("Content-Type", "image/png");
+        return res.end(Buffer.from(screenshot, "base64"), "binary");
       }
 
       return res.status(200).json(responseData);
-
     } catch (error) {
       lastError = error;
       if (page) await page.close().catch(() => {});
-      if (error.message.includes('Target closed')) await closeBrowser(true);
+      if (error.message.includes("Target closed")) await closeBrowser(true);
       if (attempt < maxRetries) continue;
     }
   }
 
-  return res.status(500).json({ success: false, error: 'render_failed', message: lastError.message });
+  return res
+    .status(500)
+    .json({
+      success: false,
+      error: "render_failed",
+      message: lastError.message,
+    });
 }
