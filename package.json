@@ -2,10 +2,10 @@
   "name": "renderkit-api",
   "version": "1.0.0",
   "description": "A high-performance Screenshot and PDF generation API with Zuplo Gateway.",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node server.js",
     "zuplo:dev": "zuplo dev",
     "zuplo:test": "zuplo test",
     "typecheck": "tsc --noEmit",
