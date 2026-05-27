@@ -10,3 +10,4 @@ test_pdf.pdf
 test_screenshot.jpg
 *.log
 vercel_deploy.log
+server.js
