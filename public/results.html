@@ -36,6 +36,7 @@
         .result-body .site-header img { width: 24px; height: 24px; }
         .result-body .site-header code { font-size: 1rem; }
         .result-body p { color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+        .result-body .screenshot { width: 100%; max-height: 480px; object-fit: cover; border-bottom: 1px solid var(--border); }
         .params-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin: 20px 0; background: #090909; }
         .params-table th { color: #000; background: var(--accent); padding: 13px 14px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
         .params-table td { padding: 13px 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.92rem; }
@@ -48,6 +49,12 @@
         .bar { height: 22px; background: var(--accent); border-radius: 4px; min-width: 4px; opacity: 0.8; }
         .bar-label { min-width: 180px; font-size: 0.85rem; color: var(--muted); }
         .bar-value { font-size: 0.85rem; font-weight: 700; color: var(--text); min-width: 80px; }
+        .og-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin: 24px 0; }
+        .og-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: rgba(12,12,12,0.92); }
+        .og-card img { width: 100%; height: auto; display: block; }
+        .og-card .og-label { padding: 12px 16px; font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--border); }
+        .pdf-link { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border: 2px solid var(--accent); border-radius: 8px; color: var(--accent); font-weight: 700; font-size: 0.9rem; margin: 8px 0; }
+        .pdf-link:hover { background: var(--accent-soft); }
         @media (max-width: 768px) { .summary-grid { grid-template-columns: repeat(2,1fr); } .container { padding: 0 18px; } .bar-label { min-width: 120px; } }
     </style>
 </head>
@@ -89,13 +96,6 @@
             <div class="bar-chart"><span class="bar-label">BBC (Clean)</span><div class="bar" style="width:39px;"></div><span class="bar-value">3,912ms</span></div>
             <div class="bar-chart"><span class="bar-label">Lando Norris (Standard)</span><div class="bar" style="width:90px;"></div><span class="bar-value">8,984ms</span></div>
             <div class="bar-chart"><span class="bar-label">Lando Norris (Clean)</span><div class="bar" style="width:108px;"></div><span class="bar-value">10,840ms</span></div>
-
-            <h3>OG Image Generation (All ~3.2s)</h3>
-            <div class="bar-chart"><span class="bar-label">"RenderKit API" (dark)</span><div class="bar" style="width:32px;"></div><span class="bar-value">3,240ms</span></div>
-            <div class="bar-chart"><span class="bar-label">"AI Revolution" (light)</span><div class="bar" style="width:33px;"></div><span class="bar-value">3,298ms</span></div>
-            <div class="bar-chart"><span class="bar-label">"Guardian Stories" (green)</span><div class="bar" style="width:33px;"></div><span class="bar-value">3,302ms</span></div>
-            <div class="bar-chart"><span class="bar-label">"BBC News" (dark)</span><div class="bar" style="width:33px;"></div><span class="bar-value">3,260ms</span></div>
-            <div class="bar-chart"><span class="bar-label">"Lando Norris" (light)</span><div class="bar" style="width:33px;"></div><span class="bar-value">3,262ms</span></div>
         </section>
 
         <!-- Screenshot Section -->
@@ -105,25 +105,27 @@
 
             <h3>1.1 CNN — Heavy JS Stabilization</h3>
             <div class="result-card">
+                <img src="result_cnn_com.jpg" alt="CNN clean capture" class="screenshot" />
                 <div class="result-body">
                     <div class="site-header"><img src="https://www.google.com/s2/favicons?domain=cnn.com&sz=32" alt="CNN" /><code>https://www.cnn.com</code></div>
-                    <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
-                    <p>CNN is one of the heaviest JavaScript environments on the web. RenderKit's Smart Wait Engine successfully analyzed DOM stability over time and captured only after the page fully settled. The auto-clean engine <strong>reduced render time by 47%</strong> from 19.4s to 10.3s by removing intrusive overlays and ads.</p>
+                    <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>clean: true</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
+                    <p>CNN is one of the heaviest JavaScript environments on the web. RenderKit's Smart Wait Engine successfully analyzed DOM stability over time and captured only after the page fully settled. The auto-clean engine <strong>reduced render time by 47%</strong> from 19.4s to 10.3s by removing intrusive overlays and ads. (Compressed: 54KB)</p>
                     <table class="params-table">
                         <tr><th>Metric</th><th>Standard</th><th>Clean</th><th>Debug</th></tr>
                         <tr><td>Status</td><td><span class="pass">✅ 200</span></td><td><span class="pass">✅ 200</span></td><td><span class="pass">✅ 200</span></td></tr>
                         <tr><td>Render Time</td><td><span class="warn">19,357ms</span></td><td><span class="pass">10,252ms</span></td><td>19,357ms</td></tr>
                         <tr><td>Smart Wait Engine</td><td colspan="3"><span class="pass">✅ Page reached stable state</span></td></tr>
-                        <tr><td>Output</td><td colspan="3">JPEG 1280x800 (base64 JSON)</td></tr>
+                        <tr><td>Output Size</td><td colspan="3">88929 bytes (compressed: 54095)</td></tr>
                     </table>
                 </div>
             </div>
 
             <h3>1.2 YCombinator — Navigation Resilience</h3>
             <div class="result-card">
+                <img src="result_news_ycombinator_com.jpg" alt="YCombinator clean capture" class="screenshot" />
                 <div class="result-body">
                     <div class="site-header"><img src="https://www.google.com/s2/favicons?domain=ycombinator.com&sz=32" alt="YCombinator" /><code>https://news.ycombinator.com</code></div>
-                    <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
+                    <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>clean: true</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
                     <p>YCombinator's HN experienced a navigation timeout on first load (standard mode). RenderKit's <strong>graceful degradation</strong> handled this by proceeding with capture anyway, resulting in a long render time. The clean mode avoided the timeout entirely and completed in <strong>11.7s</strong>. This demonstrates the resiliency built into the capture pipeline.</p>
                     <table class="params-table">
                         <tr><th>Metric</th><th>Standard</th><th>Clean</th><th>Debug</th></tr>
@@ -137,6 +139,7 @@
 
             <h3>1.3 The Guardian — Cookie Wall Removal</h3>
             <div class="result-card">
+                <img src="result_theguardian_com.jpg" alt="The Guardian clean capture" class="screenshot" />
                 <div class="result-body">
                     <div class="site-header"><img src="https://www.google.com/s2/favicons?domain=theguardian.com&sz=32" alt="Guardian" /><code>https://www.theguardian.com</code></div>
                     <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>clean: true</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
@@ -153,6 +156,7 @@
 
             <h3>1.4 BBC — Consistent Performance</h3>
             <div class="result-card">
+                <img src="result_bbc_com.jpg" alt="BBC clean capture" class="screenshot" />
                 <div class="result-body">
                     <div class="site-header"><img src="https://www.google.com/s2/favicons?domain=bbc.com&sz=32" alt="BBC" /><code>https://www.bbc.com</code></div>
                     <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>clean: true</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
@@ -169,6 +173,7 @@
 
             <h3>1.5 Lando Norris — Medium Complexity</h3>
             <div class="result-card">
+                <img src="result_landonorris_com.jpg" alt="Lando Norris clean capture" class="screenshot" />
                 <div class="result-body">
                     <div class="site-header"><img src="https://www.google.com/s2/favicons?domain=landonorris.com&sz=32" alt="Lando Norris" /><code>https://www.landonorris.com</code></div>
                     <p><strong>Configuration:</strong> <code>wait: "smart"</code>, <code>clean: true</code>, <code>stealth: true</code>, <code>quality: 70</code></p>
@@ -190,12 +195,12 @@
             <p>Endpoint: <code>POST /v1/screenshot/pdf</code>. Validates PDF rendering from live URLs with A4 format, print background enabled, and stealth mode.</p>
             
             <table class="params-table">
-                <tr><th>Website</th><th>Status</th><th>Render Time</th><th>Format</th></tr>
-                <tr><td><img src="https://www.google.com/s2/favicons?domain=cnn.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />CNN</td><td><span class="pass">✅ 200</span></td><td><span class="warn">26,524ms</span></td><td>A4</td></tr>
-                <tr><td><img src="https://www.google.com/s2/favicons?domain=ycombinator.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />YCombinator</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,951ms</span></td><td>A4</td></tr>
-                <tr><td><img src="https://www.google.com/s2/favicons?domain=theguardian.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Guardian</td><td><span class="pass">✅ 200</span></td><td><span class="pass">5,144ms</span></td><td>A4</td></tr>
-                <tr><td><img src="https://www.google.com/s2/favicons?domain=bbc.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />BBC</td><td><span class="pass">✅ 200</span></td><td><span class="pass">5,548ms</span></td><td>A4</td></tr>
-                <tr><td><img src="https://www.google.com/s2/favicons?domain=landonorris.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Lando Norris</td><td><span class="pass">✅ 200</span></td><td><span class="pass">7,209ms</span></td><td>A4</td></tr>
+                <tr><th>Website</th><th>Status</th><th>Render Time</th><th>PDF</th></tr>
+                <tr><td><img src="https://www.google.com/s2/favicons?domain=cnn.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />CNN</td><td><span class="pass">✅ 200</span></td><td><span class="warn">26,524ms</span></td><td><a href="../scratch/test_results/pdf/cnn_com.pdf" target="_blank" class="pdf-link">⬇ PDF</a></td></tr>
+                <tr><td><img src="https://www.google.com/s2/favicons?domain=ycombinator.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />YCombinator</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,951ms</span></td><td><a href="../scratch/test_results/pdf/news_ycombinator_com.pdf" target="_blank" class="pdf-link">⬇ PDF</a></td></tr>
+                <tr><td><img src="https://www.google.com/s2/favicons?domain=theguardian.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Guardian</td><td><span class="pass">✅ 200</span></td><td><span class="pass">5,144ms</span></td><td><a href="../scratch/test_results/pdf/theguardian_com.pdf" target="_blank" class="pdf-link">⬇ PDF</a></td></tr>
+                <tr><td><img src="https://www.google.com/s2/favicons?domain=bbc.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />BBC</td><td><span class="pass">✅ 200</span></td><td><span class="pass">5,548ms</span></td><td><a href="../scratch/test_results/pdf/bbc_com.pdf" target="_blank" class="pdf-link">⬇ PDF</a></td></tr>
+                <tr><td><img src="https://www.google.com/s2/favicons?domain=landonorris.com&sz=16" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Lando Norris</td><td><span class="pass">✅ 200</span></td><td><span class="pass">7,209ms</span></td><td><a href="../scratch/test_results/pdf/landonorris_com.pdf" target="_blank" class="pdf-link">⬇ PDF</a></td></tr>
             </table>
 
             <h3>PDF Performance Summary</h3>
@@ -213,16 +218,30 @@
         <!-- OG Section -->
         <section id="og">
             <h2>3. Open Graph Image Generation</h2>
-            <p>Endpoint: <code>POST /v1/screenshot/og</code>. Generates 1200x630 PNG social preview cards from structured metadata. This was the <strong>fastest and most consistent</strong> endpoint tested.</p>
+            <p>Endpoint: <code>POST /v1/screenshot/og</code>. Generates 1200x630 PNG social preview cards from structured metadata. This was the <strong>fastest and most consistent</strong> endpoint tested (avg 3,272ms, std ~25ms).</p>
 
-            <table class="params-table">
-                <tr><th>Title</th><th>Theme</th><th>Status</th><th>Render Time</th><th>Image Size</th></tr>
-                <tr><td>RenderKit API: Lightning Fast Screenshots</td><td>🌑 dark</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,240ms</span></td><td>43 KB</td></tr>
-                <tr><td>Breaking News: AI Revolution 2026</td><td>☀️ light</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,298ms</span></td><td>42 KB</td></tr>
-                <tr><td>Guardian: Top Stories Today</td><td>💚 green</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,302ms</span></td><td>36 KB</td></tr>
-                <tr><td>BBC: World News Update</td><td>🌑 dark</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,260ms</span></td><td>35 KB</td></tr>
-                <tr><td>Lando Norris: F1 Champion</td><td>☀️ light</td><td><span class="pass">✅ 200</span></td><td><span class="pass">3,262ms</span></td><td>37 KB</td></tr>
-            </table>
+            <div class="og-grid">
+                <div class="og-card">
+                    <img src="og_renderkit.png" alt="RenderKit OG dark theme" />
+                    <div class="og-label">🌑 dark — "RenderKit API: Lightning Fast Screenshots" — 3,240ms</div>
+                </div>
+                <div class="og-card">
+                    <img src="og_ai.png" alt="AI Revolution light theme" />
+                    <div class="og-label">☀️ light — "Breaking News: AI Revolution 2026" — 3,298ms</div>
+                </div>
+                <div class="og-card">
+                    <img src="og_guardian.png" alt="Guardian green theme" />
+                    <div class="og-label">💚 green — "Guardian: Top Stories Today" — 3,302ms</div>
+                </div>
+                <div class="og-card">
+                    <img src="og_bbc.png" alt="BBC dark theme" />
+                    <div class="og-label">🌑 dark — "BBC: World News Update" — 3,260ms</div>
+                </div>
+                <div class="og-card">
+                    <img src="og_lando.png" alt="Lando Norris light theme" />
+                    <div class="og-label">☀️ light — "Lando Norris: F1 Champion" — 3,262ms</div>
+                </div>
+            </div>
 
             <h3>OG Performance Summary</h3>
             <table class="params-table">
@@ -282,35 +301,9 @@
             </table>
         </section>
 
-        <!-- Cache -->
-        <section id="caching">
-            <h2>7. Cache System</h2>
-            <p>RenderKit uses a dual-layer cache (in-memory Map + optional Redis) with 10-minute default TTL. The OG endpoint uses a separate 1-hour TTL in-memory cache.</p>
-            <table class="params-table">
-                <tr><th>Feature</th><th>Status</th></tr>
-                <tr><td>In-Memory Cache</td><td><span class="pass">✅ Active (Map-based, 10-min TTL)</span></td></tr>
-                <tr><td>Redis Support</td><td><span class="pass">✅ Available (falls back to memory)</span></td></tr>
-                <tr><td>OG Image Cache</td><td><span class="pass">✅ Active (1-hour TTL)</span></td></tr>
-                <tr><td>Cache Headers</td><td><span class="pass">✅ X-Cache: HIT/MISS</span></td></tr>
-            </table>
-        </section>
-
-        <!-- Integration Examples -->
-        <section id="integrate">
-            <h2>8. Integration Examples</h2>
-            <p>RenderKit exposes a single RESTful interface across all language environments. Below are tested code snippets for three major runtimes.</p>
-
-            <table class="params-table">
-                <tr><th>Language</th><th>Code</th></tr>
-                <tr><td><img src="https://curl.se/favicon.ico" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />cURL</td><td><code>curl -X POST https://api.renderkit.com/v1/screenshot/capture -H "x-api-key: YOUR_KEY" -d '{"url":"https://example.com","clean":true,"wait":"smart"}'</code></td></tr>
-                <tr><td><img src="https://nodejs.org/static/images/favicons/favicon.png" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Node.js</td><td><code>fetch("https://api.renderkit.com/v1/screenshot/capture",{method:"POST",headers:{"x-api-key":"YOUR_KEY","Content-Type":"application/json"},body:JSON.stringify({url:"https://example.com",clean:true})}).then(r=>r.json()).then(console.log)</code></td></tr>
-                <tr><td><img src="https://www.python.org/static/favicon.ico" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;" />Python 3</td><td><code>import requests; r = requests.post("https://api.renderkit.com/v1/screenshot/capture", json={"url":"https://example.com","clean":true}, headers={"x-api-key":"YOUR_KEY"}); print(r.json())</code></td></tr>
-            </table>
-        </section>
-
         <!-- Full Results Table -->
         <section id="full-results">
-            <h2>9. Complete Test Matrix</h2>
+            <h2>7. Complete Test Matrix</h2>
             <table class="params-table">
                 <tr><th>#</th><th>Endpoint</th><th>Site / Input</th><th>Mode</th><th>Status</th><th>Time (ms)</th></tr>
                 <tr><td>1</td><td>Capture</td><td>CNN</td><td>Standard</td><td><span class="pass">✅</span></td><td>19,357</td></tr>
