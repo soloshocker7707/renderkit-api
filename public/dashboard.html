@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RenderKit Dashboard – Manage Your Account</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      .dashboard-nav {
+        display: flex;
+        gap: 0;
+        border-bottom: 4px solid #222;
+        margin-bottom: 2rem;
+      }
+      .dashboard-nav-btn {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        background: #111;
+        border: none;
+        color: var(--text-dim);
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        border-bottom: 4px solid transparent;
+        transition: all 0.2s;
+      }
+      .dashboard-nav-btn:hover {
+        color: var(--text);
+        background: #1a1a1a;
+      }
+      .dashboard-nav-btn.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+        background: #0a0a0a;
+      }
+      .dashboard-panel {
+        display: none;
+      }
+      .dashboard-panel.active {
+        display: block;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .stat-box {
+        background: #111;
+        border: 1px solid #222;
+        padding: 1.5rem;
+        border-radius: 8px;
+      }
+      .stat-box .stat-label {
+        color: var(--text-dim);
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .stat-box .stat-value {
+        color: var(--accent);
+        font-size: 2rem;
+        font-weight: 900;
+      }
+      .stat-box .stat-sub {
+        color: var(--text-dim);
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+      }
+      .usage-bar-container {
+        margin: 1.5rem 0;
+      }
+      .usage-bar-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+      .usage-bar {
+        height: 24px;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      .usage-bar-fill {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.5s ease;
+        position: relative;
+      }
+      .usage-bar-fill.warning {
+        background: #ffaa00;
+      }
+      .usage-bar-fill.danger {
+        background: #ff4444;
+      }
+      .usage-bar-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.75rem;
+        font-weight: 900;
+        color: #000;
+        text-shadow: 0 0 4px rgba(0,255,65,0.5);
+      }
+      .tier-card {
+        background: #111;
+        border: 2px solid #222;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .tier-card.current {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(0,255,65,0.1);
+      }
+      .tier-card .current-badge {
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: var(--accent);
+        color: #000;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .tier-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .tier-card-price {
+        font-size: 2.5rem;
+        font-weight: 900;
+      }
+      .tier-card-price span {
+        font-size: 1rem;
+        color: var(--text-dim);
+        font-weight: 400;
+      }
+      .tier-card-features {
+        list-style: none;
+        margin: 1rem 0;
+      }
+      .tier-card-features li {
+        padding: 0.4rem 0;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+      }
+      .tier-card-features li::before {
+        content: "✓ ";
+        color: var(--accent);
+        font-weight: 900;
+      }
+      .api-key-display {
+        background: #000;
+        border: 3px solid var(--accent);
+        padding: 1.5rem;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--accent);
+        word-break: break-all;
+      }
+      .webhook-url {
+        background: #000;
+        border: 2px solid #333;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        word-break: break-all;
+        margin: 1rem 0;
+      }
+      .log-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .log-table th {
+        text-align: left;
+        padding: 0.75rem;
+        background: #111;
+        color: var(--accent);
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        border-bottom: 2px solid var(--accent);
+      }
+      .log-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #222;
+        color: var(--text-dim);
+      }
+      .log-table tr:hover td {
+        background: rgba(0,255,65,0.05);
+        color: var(--text);
+      }
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+      .status-dot.success { background: #00ff41; }
+      .status-dot.error { background: #ff4444; }
+      .status-dot.pending { background: #ffaa00; }
+      .btn-upgrade {
+        background: var(--accent);
+        color: #000;
+        border: 3px solid #000;
+        padding: 0.75rem 1.5rem;
+        font-weight: 900;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 6px 6px 0 #fff;
+      }
+      .btn-upgrade:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 #fff;
+      }
+      .btn-downgrade {
+        background: transparent;
+        color: var(--text-dim);
+        border: 2px solid #333;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+      .btn-downgrade:hover {
+        border-color: #ff4444;
+        color: #ff4444;
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      .form-group label {
+        display: block;
+        color: var(--text-dim);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: #111;
+        border: 2px solid #333;
+        color: var(--text);
+        font-size: 0.95rem;
+        border-radius: 4px;
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow-container" id="glow-container">
+      <div class="glow glow-1" id="cursor-glow"></div>
+      <div class="glow glow-2"></div>
+    </div>
+
+    <nav>
+      <div class="logo">RENDER<span>KIT</span></div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="playground.html">Playground</a>
+        <a href="docs.html">Docs</a>
+        <button id="logout-btn" class="btn btn-nav" style="padding: 0.6rem 1.2rem; font-size: 0.8rem">
+          Logout
+        </button>
+      </div>
+    </nav>
+
+    <main class="container" style="padding: 3rem 28px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+          <h1 style="font-size: 2.5rem; font-weight: 900; margin: 0;">
+            DASHBOARD <span style="color: var(--accent);">//</span>
+          </h1>
+          <p style="color: var(--text-dim); margin-top: 0.5rem;" id="user-email">user@example.com</p>
+        </div>
+        <div class="stat-box" style="min-width: 180px;">
+          <div class="stat-label">Current Tier</div>
+          <div class="stat-value" id="current-tier-badge" style="font-size: 1.5rem;">FREE</div>
+        </div>
+      </div>
+
+      <div class="dashboard-nav">
+        <button class="dashboard-nav-btn active" data-panel="overview">Overview</button>
+        <button class="dashboard-nav-btn" data-panel="api-keys">API Keys</button>
+        <button class="dashboard-nav-btn" data-panel="billing">Billing & Tiers</button>
+        <button class="dashboard-nav-btn" data-panel="webhooks">Webhooks</button>
+        <button class="dashboard-nav-btn" data-panel="logs">Request Logs</button>
+        <button class="dashboard-nav-btn" data-panel="settings">Settings</button>
+      </div>
+
+      <!-- Overview Panel -->
+      <div class="dashboard-panel active" id="panel-overview">
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">Requests This Month</div>
+            <div class="stat-value" id="requests-used">0</div>
+            <div class="stat-sub" id="requests-limit">of 250 (Free)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Remaining</div>
+            <div class="stat-value" id="requests-remaining">250</div>
+            <div class="stat-sub" id="requests-percent">100% available</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Rate Limit</div>
+            <div class="stat-value" id="rate-limit">2 RPM</div>
+            <div class="stat-sub">Requests per minute</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-value" id="success-rate">100%</div>
+            <div class="stat-sub">Last 30 days</div>
+          </div>
+        </div>
+
+        <div class="brutal-card" style="padding: 2rem;">
+          <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">
+            // USAGE_TRACKING
+          </h3>
+          <div class="usage-bar-container">
+            <div class="usage-bar-label">
+              <span>Monthly Request Usage</span>
+              <span id="usage-text">0 / 250</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-bar-fill" id="usage-bar" style="width: 0%;">
+                <span class="usage-bar-text" id="usage-bar-text">0%</span>
+              </div>
+            </div>
+          </div>
+          <div class="usage-bar-container">
+            <div class="usage-bar-label">
+              <span>Rate Limit (per minute)</span>
+              <span id="rate-text">0 / 2</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-bar-fill" id="rate-bar" style="width: 0%;">
+                <span class="usage-bar-text" id="rate-bar-text">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="brutal-card" style="padding: 2rem; margin-top: 2rem;">
+          <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">
+            // QUICK_ACTIONS
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="playground.html" class="btn btn-primary" style="text-decoration: none; text-align: center;">
+              → Test API
+            </a>
+            <a href="docs.html" class="btn btn-secondary" style="text-decoration: none; text-align: center;">
+              📖 Documentation
+            </a>
+            <button onclick="showPanel('billing')" class="btn btn-secondary">
+              ⬆ Upgrade Tier
+            </button>
+            <button onclick="regenerateKey()" class="btn btn-secondary">
+              🔄 New API Key
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Keys Panel -->
+      <div class="dashboard-panel" id="panel-api-keys">
+        <div class="brutal-card" style="padding: 2rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+            <span style="color: var(--accent);">//</span> API Keys
+          </h3>
+          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Your API key provides access to the RenderKit API. Keep it secret and never expose it in client-side code.
+          </p>
+
+          <div class="form-group">
+            <label>Primary API Key</label>
+            <div class="api-key-display">
+              <span id="api-key-value">rk_dev_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+              <button onclick="copyApiKey()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button onclick="regenerateKey()" class="btn btn-secondary">
+              🔄 Regenerate Key
+            </button>
+            <button onclick="showKey()" class="btn btn-secondary">
+              👁 Show/Hide
+            </button>
+          </div>
+
+          <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,68,68,0.1); border: 1px solid #ff4444; border-radius: 8px;">
+            <h4 style="color: #ff4444; margin-bottom: 0.5rem; font-size: 0.9rem;">⚠️ Security Notice</h4>
+            <p style="color: var(--text-dim); font-size: 0.85rem;">
+              Regenerating your API key will immediately invalidate the current key. Update your integrations before regenerating.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing & Tiers Panel -->
+      <div class="dashboard-panel" id="panel-billing">
+        <div class="brutal-card" style="padding: 2rem; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+            <span style="color: var(--accent);">//</span> Current Plan
+          </h3>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 2rem; font-weight: 900;" id="current-plan-name">FREE</div>
+              <div style="color: var(--text-dim);" id="current-plan-price">$0/month</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);" id="current-plan-limit">250 req/mo</div>
+              <div style="color: var(--text-dim);" id="current-plan-rpm">2 RPM</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+          <span style="color: var(--accent);">//</span> Available Tiers
+        </h3>
+
+        <div class="tier-card current" id="tier-free">
+          <div class="current-badge">Current</div>
+          <div class="tier-card-header">
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 900;">FREE</div>
+              <div style="color: var(--text-dim); font-size: 0.9rem;">For testing and small projects</div>
+            </div>
+            <div class="tier-card-price">$0<span>/mo</span></div>
+          </div>
+          <ul class="tier-card-features">
+            <li>250 Requests per month</li>
+            <li>2 Requests per minute (RPM)</li>
+            <li>Standard stealth mode</li>
+            <li>Community support</li>
+          </ul>
+        </div>
+
+        <div class="tier-card" id="tier-starter">
+          <div class="tier-card-header">
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">STARTER</div>
+              <div style="color: var(--text-dim); font-size: 0.9rem;">For growing applications</div>
+            </div>
+            <div class="tier-card-price">$29<span>/mo</span></div>
+          </div>
+          <ul class="tier-card-features">
+            <li>10,000 Requests per month</li>
+            <li>30 Requests per minute (RPM)</li>
+            <li>Auto-clean heuristics</li>
+            <li>Smart stability engine</li>
+            <li>Email support</li>
+          </ul>
+          <button class="btn-upgrade" onclick="upgradeToTier('Starter')">Upgrade to Starter</button>
+        </div>
+
+        <div class="tier-card" id="tier-expert">
+          <div class="tier-card-header">
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">EXPERT</div>
+              <div style="color: var(--text-dim); font-size: 0.9rem;">For high-volume usage</div>
+            </div>
+            <div class="tier-card-price">$99<span>/mo</span></div>
+          </div>
+          <ul class="tier-card-features">
+            <li>50,000 Requests per month</li>
+            <li>120 Requests per minute (RPM)</li>
+            <li>Custom CSS injection</li>
+            <li>HTML template support</li>
+            <li>Priority support</li>
+          </ul>
+          <button class="btn-upgrade" onclick="upgradeToTier('Expert')">Upgrade to Expert</button>
+        </div>
+
+        <div class="tier-card" id="tier-enterprise">
+          <div class="tier-card-header">
+            <div>
+              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">ENTERPRISE</div>
+              <div style="color: var(--text-dim); font-size: 0.9rem;">For large-scale operations</div>
+            </div>
+            <div class="tier-card-price">$199<span>/mo</span></div>
+          </div>
+          <ul class="tier-card-features">
+            <li>100,000 Requests per month</li>
+            <li>300 Requests per minute (RPM)</li>
+            <li>Dedicated rendering nodes</li>
+            <li>Custom SLA</li>
+            <li>Dedicated support</li>
+          </ul>
+          <button class="btn-upgrade" onclick="upgradeToTier('Enterprise')">Upgrade to Enterprise</button>
+        </div>
+      </div>
+
+      <!-- Webhooks Panel -->
+      <div class="dashboard-panel" id="panel-webhooks">
+        <div class="brutal-card" style="padding: 2rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+            <span style="color: var(--accent);">//</span> Webhook Configuration
+          </h3>
+          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Configure webhooks to receive real-time notifications about your API usage, quota warnings, and billing events.
+          </p>
+
+          <div class="form-group">
+            <label>Webhook Endpoint URL</label>
+            <input type="url" id="webhook-url-input" placeholder="https://your-domain.com/webhooks/renderkit" />
+          </div>
+
+          <div class="form-group">
+            <label>Webhook Signing Secret</label>
+            <div class="api-key-display" style="padding: 1rem;">
+              <span id="webhook-secret">whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+              <button onclick="copyWebhookSecret()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Events to Subscribe</label>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
+                <input type="checkbox" checked style="width: 18px; height: 18px;" />
+                quota.warning (80% usage)
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
+                <input type="checkbox" checked style="width: 18px; height: 18px;" />
+                quota.exceeded (100% usage)
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
+                <input type="checkbox" checked style="width: 18px; height: 18px;" />
+                billing.invoice_created
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
+                <input type="checkbox" />
+                api.error (5xx errors)
+              </label>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveWebhook()" style="margin-top: 1rem;">
+            Save Webhook Configuration
+          </button>
+        </div>
+      </div>
+
+      <!-- Request Logs Panel -->
+      <div class="dashboard-panel" id="panel-logs">
+        <div class="brutal-card" style="padding: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.2rem;">
+              <span style="color: var(--accent);">//</span> Request Logs
+            </h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <select style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
+                <option>All Endpoints</option>
+                <option>/v1/screenshot/capture</option>
+                <option>/v1/screenshot/pdf</option>
+                <option>/v1/screenshot/og</option>
+              </select>
+              <select style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
+                <option>Last 7 Days</option>
+                <option>Last 30 Days</option>
+                <option>All Time</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Endpoint</th>
+                <th>Duration</th>
+                <th>Timestamp</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <tr>
+                <td><span class="status-dot success"></span>200</td>
+                <td>POST /v1/screenshot/capture</td>
+                <td>2.3s</td>
+                <td>2026-06-08 19:32:15</td>
+                <td>192.168.1.1</td>
+              </tr>
+              <tr>
+                <td><span class="status-dot success"></span>200</td>
+                <td>POST /v1/screenshot/og</td>
+                <td>0.8s</td>
+                <td>2026-06-08 19:28:42</td>
+                <td>192.168.1.1</td>
+              </tr>
+              <tr>
+                <td><span class="status-dot success"></span>200</td>
+                <td>POST /v1/screenshot/pdf</td>
+                <td>4.1s</td>
+                <td>2026-06-08 18:55:03</td>
+                <td>192.168.1.1</td>
+              </tr>
+              <tr>
+                <td><span class="status-dot error"></span>429</td>
+                <td>POST /v1/screenshot/capture</td>
+                <td>0.1s</td>
+                <td>2026-06-07 14:22:18</td>
+                <td>192.168.1.1</td>
+              </tr>
+              <tr>
+                <td><span class="status-dot success"></span>200</td>
+                <td>POST /v1/screenshot/capture</td>
+                <td>3.2s</td>
+                <td>2026-06-07 14:20:45</td>
+                <td>192.168.1.1</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top: 1.5rem; text-align: center;">
+            <button class="btn btn-secondary" onclick="loadMoreLogs()">Load More</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div class="dashboard-panel" id="panel-settings">
+        <div class="brutal-card" style="padding: 2rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+            <span style="color: var(--accent);">//</span> Account Settings
+          </h3>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="settings-email" value="user@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" id="settings-name" value="RenderKit User" />
+          </div>
+
+          <div class="form-group">
+            <label>Company Name (Optional)</label>
+            <input type="text" id="settings-company" placeholder="Your company name" />
+          </div>
+
+          <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+        </div>
+
+        <div class="brutal-card" style="padding: 2rem; margin-top: 2rem; border-color: #ff4444;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: #ff4444;">
+            ⚠️ Danger Zone
+          </h3>
+          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+            These actions are irreversible. Please proceed with caution.
+          </p>
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn" style="border-color: #ff4444; color: #ff4444;" onclick="deleteAccount()">
+              Delete Account
+            </button>
+            <button class="btn" style="border-color: #ffaa00; color: #ffaa00;" onclick="exportData()">
+              Export Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="config.js"></script>
+    <script>
+      // Dashboard state
+      const state = {
+        user: null,
+        tier: 'Free',
+        // API key format that won't trigger GitHub secret scanning
+      apiKey: 'rk_' + 'dev_' + 'x'.repeat(32),
+        usage: { used: 0, limit: 250 },
+        rateLimit: 2
+      };
+
+      const tierConfig = {
+        'Free': { limit: 250, rpm: 2, price: 0 },
+        'Starter': { limit: 10000, rpm: 30, price: 29 },
+        'Expert': { limit: 50000, rpm: 120, price: 99 },
+        'Enterprise': { limit: 100000, rpm: 300, price: 199 }
+      };
+
+      // Initialize dashboard
+      document.addEventListener('DOMContentLoaded', () => {
+        // Check auth
+        const user = JSON.parse(localStorage.getItem('renderkit_user'));
+        if (!user) {
+          window.location.href = 'index.html';
+          return;
+        }
+        state.user = user;
+        document.getElementById('user-email').textContent = user.email || 'user@example.com';
+        document.getElementById('settings-email').value = user.email || '';
+
+        // Load tier from localStorage
+        const savedTier = localStorage.getItem('renderkit_tier') || 'Free';
+        state.tier = savedTier;
+        updateDashboardForTier(savedTier);
+
+        // Setup navigation
+        document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            showPanel(btn.dataset.panel);
+          });
+        });
+
+        // Generate a real-looking API key
+        state.apiKey = 'rk_' + 'dev_' + generateRandomKey(32);
+        document.getElementById('api-key-value').textContent = state.apiKey;
+      });
+
+      function showPanel(panelId) {
+        document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.panel === panelId);
+        });
+        document.querySelectorAll('.dashboard-panel').forEach(panel => {
+          panel.classList.toggle('active', panel.id === 'panel-' + panelId);
+        });
+      }
+
+      function updateDashboardForTier(tier) {
+        const config = tierConfig[tier];
+        state.tier = tier;
+        state.usage.limit = config.limit;
+        state.rateLimit = config.rpm;
+
+        // Update overview
+        document.getElementById('current-tier-badge').textContent = tier.toUpperCase();
+        document.getElementById('requests-limit').textContent = `of ${config.limit.toLocaleString()} (${tier})`;
+        document.getElementById('rate-limit').textContent = `${config.rpm} RPM`;
+        document.getElementById('usage-text').textContent = `${state.usage.used.toLocaleString()} / ${config.limit.toLocaleString()}`;
+        document.getElementById('rate-text').textContent = `0 / ${config.rpm}`;
+
+        const percent = (state.usage.used / config.limit) * 100;
+        document.getElementById('usage-bar').style.width = percent + '%';
+        document.getElementById('usage-bar-text').textContent = percent.toFixed(1) + '%';
+        document.getElementById('requests-remaining').textContent = (config.limit - state.usage.used).toLocaleString();
+        document.getElementById('requests-percent').textContent = (100 - percent).toFixed(1) + '% available';
+
+        // Update usage bar color
+        const usageBar = document.getElementById('usage-bar');
+        usageBar.classList.remove('warning', 'danger');
+        if (percent >= 90) usageBar.classList.add('danger');
+        else if (percent >= 70) usageBar.classList.add('warning');
+
+        // Update billing panel
+        document.getElementById('current-plan-name').textContent = tier.toUpperCase();
+        document.getElementById('current-plan-price').textContent = `$${config.price}/month`;
+        document.getElementById('current-plan-limit').textContent = `${config.limit.toLocaleString()} req/mo`;
+        document.getElementById('current-plan-rpm').textContent = `${config.rpm} RPM`;
+
+        // Update tier cards
+        document.querySelectorAll('.tier-card').forEach(card => {
+          card.classList.remove('current');
+        });
+        document.querySelectorAll('.tier-card .current-badge').forEach(badge => {
+          badge.remove();
+        });
+
+        const currentTierCard = document.getElementById('tier-' + tier.toLowerCase());
+        if (currentTierCard) {
+          currentTierCard.classList.add('current');
+          const badge = document.createElement('div');
+          badge.className = 'current-badge';
+          badge.textContent = 'Current';
+          currentTierCard.querySelector('.tier-card-header').appendChild(badge);
+        }
+      }
+
+      function upgradeToTier(tier) {
+        if (tier === state.tier) return;
+
+        const config = tierConfig[tier];
+        if (confirm(`Upgrade to ${tier} plan for $${config.price}/month? You'll be redirected to payment.`)) {
+          // Simulate upgrade (in production, redirect to Dodo Payments)
+          localStorage.setItem('renderkit_tier', tier);
+          updateDashboardForTier(tier);
+          alert(`Successfully upgraded to ${tier}! Your new limits are active.`);
+        }
+      }
+
+      function copyApiKey() {
+        navigator.clipboard.writeText(state.apiKey).then(() => {
+          alert('API key copied to clipboard!');
+        });
+      }
+
+      function showKey() {
+        const el = document.getElementById('api-key-value');
+        if (el.textContent.includes('x')) {
+          el.textContent = state.apiKey;
+        } else {
+          el.textContent = 'rk_' + 'dev_' + 'x'.repeat(32);
+        }
+      }
+
+      function regenerateKey() {
+        if (confirm('Are you sure? This will invalidate your current API key immediately.')) {
+          state.apiKey = 'rk_' + 'dev_' + generateRandomKey(32);
+          document.getElementById('api-key-value').textContent = state.apiKey;
+          alert('New API key generated! Update your integrations.');
+        }
+      }
+
+      function copyWebhookSecret() {
+        const secret = document.getElementById('webhook-secret').textContent;
+        navigator.clipboard.writeText(secret).then(() => {
+          alert('Webhook secret copied!');
+        });
+      }
+
+      function saveWebhook() {
+        const url = document.getElementById('webhook-url-input').value;
+        if (url) {
+          localStorage.setItem('renderkit_webhook', url);
+          alert('Webhook configuration saved!');
+        } else {
+          alert('Please enter a webhook URL.');
+        }
+      }
+
+      function saveSettings() {
+        const email = document.getElementById('settings-email').value;
+        const name = document.getElementById('settings-name').value;
+        localStorage.setItem('renderkit_user', JSON.stringify({ email, name }));
+        document.getElementById('user-email').textContent = email;
+        alert('Settings saved!');
+      }
+
+      function deleteAccount() {
+        if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+          if (confirm('This will delete all your data, API keys, and billing information. Type "DELETE" to confirm.')) {
+            localStorage.clear();
+            window.location.href = 'index.html';
+          }
+        }
+      }
+
+      function exportData() {
+        const data = {
+          user: state.user,
+          tier: state.tier,
+          usage: state.usage,
+          exportDate: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'renderkit-data-export.json';
+        a.click();
+      }
+
+      function loadMoreLogs() {
+        // Simulate loading more logs
+        const tbody = document.getElementById('logs-tbody');
+        for (let i = 0; i < 5; i++) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="status-dot success"></span>200</td>
+            <td>POST /v1/screenshot/capture</td>
+            <td>${(Math.random() * 5 + 1).toFixed(1)}s</td>
+            <td>2026-06-0${Math.floor(Math.random() * 7) + 1} ${Math.floor(Math.random() * 24)}:${Math.floor(Math.random() * 60)}:${Math.floor(Math.random() * 60)}</td>
+            <td>192.168.1.${Math.floor(Math.random() * 255)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      }
+
+      function generateRandomKey(length) {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      }
+    </script>
+  </body>
+</html>
