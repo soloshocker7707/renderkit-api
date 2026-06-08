@@ -1,4 +1,43 @@
 {
   "version": 1,
-  "compatibilityDate": "2025-02-06"
+  "compatibilityDate": "2025-02-06",
+  "runtime": {
+    "environment": {
+      "description": "RenderKit API - Zuplo Gateway Environment",
+      "variables": {
+        "ZUPLO_API_KEY": {
+          "description": "Zuplo Management API key for consumer group sync",
+          "type": "secret",
+          "required": true
+        },
+        "ZUPLO_GATEWAY_ID": {
+          "description": "Zuplo Gateway ID for Management API calls",
+          "type": "string",
+          "required": true
+        },
+        "ZUPLO_ENVIRONMENT": {
+          "description": "Environment label (production/staging)",
+          "type": "string",
+          "default": "production"
+        },
+        "DODO_WEBHOOK_SECRET": {
+          "description": "Signing secret from Dodo Payments webhook settings",
+          "type": "secret",
+          "required": true
+        },
+        "SUPABASE_URL": {
+          "description": "Supabase project URL for auth",
+          "type": "string"
+        },
+        "SUPABASE_SERVICE_ROLE_KEY": {
+          "description": "Supabase service role key for auth queries",
+          "type": "secret"
+        },
+        "SECRET_ZUPLO": {
+          "description": "Shared secret injected into upstream requests for verification",
+          "type": "secret"
+        }
+      }
+    }
+  }
 }

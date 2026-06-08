@@ -1,3 +1,5 @@
+/// <reference types="@zuplo/runtime" />
+
 declare const process: {
   env: Record<string, string | undefined>;
 };
@@ -28,6 +30,27 @@ declare module '@zuplo/runtime' {
   }
 
   export const environment: Record<string, string | undefined>;
+
+  // Policy exports
+  export function RateLimitInboundPolicy(
+    request: ZuploRequest,
+    context: ZuploContext,
+    options: any,
+    policyName: string
+  ): Promise<ZuploRequest | Response>;
+
+  export function QuotaInboundPolicy(
+    request: ZuploRequest,
+    context: ZuploContext,
+    options: any,
+    policyName: string
+  ): Promise<ZuploRequest | Response>;
+
+  export function urlForwardHandler(
+    request: ZuploRequest,
+    context: ZuploContext,
+    options: { baseUrl: string }
+  ): Promise<Response>;
 }
 
 declare module 'zuplo:routes' {

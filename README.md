@@ -10,6 +10,16 @@ A high-performance API for web screenshots, PDF generation, and Open Graph image
 - **Anti-Bot Stealth**: Integrated User-Agent rotation and footprint evasions.
 - **High-Performance Pooling**: Singleton browser pattern for zero cold starts.
 - **Resilient Retry Logic**: 3-attempt auto-retry with timeout fallback snapshots.
+- **Tiered Rate Limiting**: Dynamic rate limits based on subscription tier.
+
+## 💰 Pricing & Tiers
+
+| Tier | Price | Monthly Requests | Rate Limit |
+|------|-------|------------------|------------|
+| **Free** | $0 | 250 | 2 RPM |
+| **Starter** | $29/mo | 10,000 | 30 RPM |
+| **Expert** | $99/mo | 50,000 | 120 RPM |
+| **Enterprise** | $199/mo | 100,000 | 300 RPM |
 
 ## 📖 Documentation (Postman)
 

@@ -87,6 +87,29 @@
         }
       }
     },
+    "/webhooks/dodo": {
+      "post": {
+        "summary": "Dodo Payments Webhook",
+        "description": "Receives subscription events from Dodo Payments and syncs users to Zuplo consumer groups for tiered access.",
+        "operationId": "dodoWebhook",
+        "x-zuplo-route": {
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/dodo-sync)"
+          },
+          "policies": {
+            "inbound": [
+              "cors"
+            ]
+          }
+        },
+        "responses": {
+          "200": { "description": "Webhook processed successfully" },
+          "400": { "description": "Invalid payload" },
+          "401": { "description": "Invalid signature" }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "API Health",
