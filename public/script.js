@@ -26,8 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateUI = async (user) => {
         if (user) {
             if (authBtn) authBtn.textContent = 'Dashboard';
-            if (landingContent) landingContent.style.display = 'none';
-            if (dashboard) dashboard.style.display = 'block';
+            // Only toggle landing/dashboard if both exist (e.g., on a page with both sections)
+            if (landingContent && dashboard) {
+                landingContent.style.display = 'none';
+                dashboard.style.display = 'block';
+            }
 
             // Proactive Profile Fetching
             try {
@@ -57,8 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (authBtn) authBtn.textContent = 'Login';
-            if (landingContent) landingContent.style.display = 'block';
-            if (dashboard) dashboard.style.display = 'none';
+            // Only toggle landing/dashboard if both exist
+            if (landingContent && dashboard) {
+                landingContent.style.display = 'block';
+                dashboard.style.display = 'none';
+            }
         }
     };
 
