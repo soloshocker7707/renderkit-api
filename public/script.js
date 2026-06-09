@@ -17,14 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroSignup = document.getElementById('hero-signup');
     const cursorGlow = document.getElementById('cursor-glow');
 
+    // --- NULL CHECKS ---
+    // These elements may not exist on all pages, so we check before using them
+
     let isLogin = true;
 
     // --- AUTH LOGIC ---
     const updateUI = async (user) => {
         if (user) {
-            authBtn.textContent = 'Dashboard';
-            landingContent.style.display = 'none';
-            dashboard.style.display = 'block';
+            if (authBtn) authBtn.textContent = 'Dashboard';
+            if (landingContent) landingContent.style.display = 'none';
+            if (dashboard) dashboard.style.display = 'block';
 
             // Proactive Profile Fetching
             try {
@@ -39,19 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (data) {
-                    document.getElementById('display-api-key').textContent = data.api_key || 'Pending provisioning';
-                    document.getElementById('user-tier').textContent = data.tier || 'Starter';
+                    const displayApiKey = document.getElementById('display-api-key');
+                    const userTier = document.getElementById('user-tier');
+                    if (displayApiKey) displayApiKey.textContent = data.api_key || 'Pending provisioning';
+                    if (userTier) userTier.textContent = data.tier || 'Starter';
                 } else {
-                    document.getElementById('display-api-key').textContent = 'Pending provisioning';
-                    document.getElementById('user-tier').textContent = 'Starter';
+                    const displayApiKey = document.getElementById('display-api-key');
+                    const userTier = document.getElementById('user-tier');
+                    if (displayApiKey) displayApiKey.textContent = 'Pending provisioning';
+                    if (userTier) userTier.textContent = 'Starter';
                 }
             } catch (err) {
                 console.error('Profile Load Error:', err);
             }
         } else {
-            authBtn.textContent = 'Login';
-            landingContent.style.display = 'block';
-            dashboard.style.display = 'none';
+            if (authBtn) authBtn.textContent = 'Login';
+            if (landingContent) landingContent.style.display = 'block';
+            if (dashboard) dashboard.style.display = 'none';
         }
     };
 
