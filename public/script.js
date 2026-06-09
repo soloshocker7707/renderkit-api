@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authBtn) {
         authBtn.addEventListener('click', () => {
             if (currentUser) {
-                const dashboardEl = document.getElementById('dashboard');
-                if (dashboardEl) dashboardEl.scrollIntoView({ behavior: 'smooth' });
+                // Redirect to dashboard when logged in
+                window.location.href = 'dashboard.html';
             } else {
                 navToAuth();
             }
