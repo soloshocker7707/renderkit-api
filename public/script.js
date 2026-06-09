@@ -134,22 +134,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (supabase) {
+        // Initialize auth state - recover session from storage
         supabase.auth.getSession().then(({ data: { session } }) => {
-            currentUser = session?.user;
+            currentUser = session?.user ?? null;
             updateUI(currentUser);
         });
 
+        // Listen for auth state changes
         supabase.auth.onAuthStateChange((event, session) => {
-            currentUser = session?.user;
+            console.log('Auth event:', event);
+            currentUser = session?.user ?? null;
             updateUI(currentUser);
         });
 
         if (logoutBtn) {
             logoutBtn.addEventListener('click', async () => {
                 await supabase.auth.signOut();
+                currentUser = null;
                 window.location.href = 'index.html';
             });
         }
+    } else {
+        // No Supabase configured - show default state
+        if (authBtn) authBtn.textContent = 'Login';
     }
 
     // --- INTEGRATION TABS ---
