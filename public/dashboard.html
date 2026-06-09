@@ -707,14 +707,20 @@
       </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script>
+      // --- CONFIG ---
+      const config = window.RENDERKIT_CONFIG || {};
+      const supabase = window.supabase
+        ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY)
+        : null;
+
       // Dashboard state
       const state = {
         user: null,
         tier: 'Free',
-        // API key format that won't trigger GitHub secret scanning
-      apiKey: 'rk_' + 'dev_' + 'x'.repeat(32),
+        apiKey: 'rk_' + 'dev_' + 'x'.repeat(32),
         usage: { used: 0, limit: 250 },
         rateLimit: 2
       };
@@ -728,20 +734,33 @@
 
       // Initialize dashboard
       document.addEventListener('DOMContentLoaded', () => {
-        // Check auth
-        const user = JSON.parse(localStorage.getItem('renderkit_user'));
-        if (!user) {
-          window.location.href = 'index.html';
+        if (!supabase) {
+          window.location.href = 'auth.html';
           return;
         }
-        state.user = user;
-        document.getElementById('user-email').textContent = user.email || 'user@example.com';
-        document.getElementById('settings-email').value = user.email || '';
 
-        // Load tier from localStorage
-        const savedTier = localStorage.getItem('renderkit_tier') || 'Free';
-        state.tier = savedTier;
-        updateDashboardForTier(savedTier);
+        // Check Supabase session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (!session?.user) {
+            window.location.href = 'auth.html';
+            return;
+          }
+
+          state.user = session.user;
+          document.getElementById('user-email').textContent = session.user.email || 'user@example.com';
+          document.getElementById('settings-email').value = session.user.email || '';
+
+          // Load tier from profiles table
+          supabase.from('profiles').select('*').single().then(({ data, error }) => {
+            const tier = data?.tier || 'Free';
+            state.tier = tier;
+            state.apiKey = data?.api_key || state.apiKey;
+            document.getElementById('api-key-value').textContent = state.apiKey;
+            updateDashboardForTier(tier);
+          }).catch(() => {
+            updateDashboardForTier('Free');
+          });
+        });
 
         // Setup navigation
         document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
@@ -749,10 +768,6 @@
             showPanel(btn.dataset.panel);
           });
         });
-
-        // Generate a real-looking API key
-        state.apiKey = 'rk_' + 'dev_' + generateRandomKey(32);
-        document.getElementById('api-key-value').textContent = state.apiKey;
       });
 
       function showPanel(panelId) {
@@ -876,8 +891,9 @@
       function deleteAccount() {
         if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
           if (confirm('This will delete all your data, API keys, and billing information. Type "DELETE" to confirm.')) {
+            if (supabase) supabase.auth.signOut();
             localStorage.clear();
-            window.location.href = 'index.html';
+            window.location.href = 'auth.html';
           }
         }
       }
@@ -898,7 +914,6 @@
       }
 
       function loadMoreLogs() {
-        // Simulate loading more logs
         const tbody = document.getElementById('logs-tbody');
         for (let i = 0; i < 5; i++) {
           const tr = document.createElement('tr');
