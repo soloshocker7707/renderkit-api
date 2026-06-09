@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isLogin) {
                     const { error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    window.location.href = 'index.html';
+                    window.location.href = 'dashboard.html';
                 } else {
                     const { error } = await supabase.auth.signUp({
                         email,
