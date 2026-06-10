@@ -1,11 +1,19 @@
 {
-  "installCommand": "npm install --ignore-scripts",
+  "installCommand": "npm run vercel:install",
   "framework": null,
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/playground", "destination": "/playground.html" },
+    { "source": "/auth", "destination": "/auth.html" },
+    { "source": "/docs", "destination": "/docs.html" },
+    { "source": "/results", "destination": "/results.html" },
     { "source": "/v1/screenshot/capture", "destination": "/api/v1/screenshot/capture" },
     { "source": "/v1/screenshot/pdf", "destination": "/api/v1/screenshot/pdf" },
     { "source": "/v1/screenshot/og", "destination": "/api/v1/screenshot/og" },
-    { "source": "/health", "destination": "/api/health" }
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/blocked", "destination": "/api/blocked" },
+    { "source": "/waitlist", "destination": "/api/waitlist" }
   ],
   "builds": [
     {

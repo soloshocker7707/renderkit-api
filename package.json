@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
+    "vercel:install": "npm install --ignore-scripts --no-audit --no-fund",
     "zuplo:dev": "zuplo dev",
     "zuplo:test": "zuplo test",
     "typecheck": "tsc --noEmit",
