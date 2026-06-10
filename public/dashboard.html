@@ -18,6 +18,7 @@
         gap: 0;
         border-bottom: 4px solid #222;
         margin-bottom: 2rem;
+        overflow-x: auto;
       }
       .dashboard-nav-btn {
         flex: 1;
@@ -32,6 +33,7 @@
         cursor: pointer;
         border-bottom: 4px solid transparent;
         transition: all 0.2s;
+        white-space: nowrap;
       }
       .dashboard-nav-btn:hover {
         color: var(--text);
@@ -42,12 +44,8 @@
         border-bottom-color: var(--accent);
         background: #0a0a0a;
       }
-      .dashboard-panel {
-        display: none;
-      }
-      .dashboard-panel.active {
-        display: block;
-      }
+      .dashboard-panel { display: none; }
+      .dashboard-panel.active { display: block; }
       .stat-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -78,9 +76,7 @@
         font-size: 0.8rem;
         margin-top: 0.25rem;
       }
-      .usage-bar-container {
-        margin: 1.5rem 0;
-      }
+      .usage-bar-container { margin: 1.5rem 0; }
       .usage-bar-label {
         display: flex;
         justify-content: space-between;
@@ -101,12 +97,8 @@
         transition: width 0.5s ease;
         position: relative;
       }
-      .usage-bar-fill.warning {
-        background: #ffaa00;
-      }
-      .usage-bar-fill.danger {
-        background: #ff4444;
-      }
+      .usage-bar-fill.warning { background: #ffaa00; }
+      .usage-bar-fill.danger { background: #ff4444; }
       .usage-bar-text {
         position: absolute;
         top: 50%;
@@ -147,10 +139,7 @@
         align-items: center;
         margin-bottom: 1rem;
       }
-      .tier-card-price {
-        font-size: 2.5rem;
-        font-weight: 900;
-      }
+      .tier-card-price { font-size: 2.5rem; font-weight: 900; }
       .tier-card-price span {
         font-size: 1rem;
         color: var(--text-dim);
@@ -182,17 +171,6 @@
         font-size: 0.9rem;
         color: var(--accent);
         word-break: break-all;
-      }
-      .webhook-url {
-        background: #000;
-        border: 2px solid #333;
-        padding: 1rem;
-        border-radius: 8px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.8rem;
-        color: var(--text-dim);
-        word-break: break-all;
-        margin: 1rem 0;
       }
       .log-table {
         width: 100%;
@@ -246,22 +224,7 @@
         transform: translate(-2px, -2px);
         box-shadow: 8px 8px 0 #fff;
       }
-      .btn-downgrade {
-        background: transparent;
-        color: var(--text-dim);
-        border: 2px solid #333;
-        padding: 0.5rem 1rem;
-        font-weight: 700;
-        font-size: 0.8rem;
-        cursor: pointer;
-      }
-      .btn-downgrade:hover {
-        border-color: #ff4444;
-        color: #ff4444;
-      }
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
+      .form-group { margin-bottom: 1.5rem; }
       .form-group label {
         display: block;
         color: var(--text-dim);
@@ -271,7 +234,7 @@
         letter-spacing: 1px;
         margin-bottom: 0.5rem;
       }
-      .form-group input {
+      .form-group input, .form-group select {
         width: 100%;
         padding: 0.75rem 1rem;
         background: #111;
@@ -280,10 +243,68 @@
         font-size: 0.95rem;
         border-radius: 4px;
       }
-      .form-group input:focus {
+      .form-group input:focus, .form-group select:focus {
         outline: none;
         border-color: var(--accent);
       }
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 1rem 2rem;
+        background: var(--accent);
+        color: #000;
+        font-weight: 900;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,255,65,0.3);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.error {
+        background: #ff4444;
+        box-shadow: 0 4px 20px rgba(255,68,68,0.3);
+      }
+      .key-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+      }
+      .key-item .key-val {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: var(--accent);
+        word-break: break-all;
+        flex: 1;
+        margin-right: 1rem;
+      }
+      .key-item .key-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(0,255,65,0.2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
@@ -305,424 +326,328 @@
     </nav>
 
     <main class="container" style="padding: 3rem 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <div>
-          <h1 style="font-size: 2.5rem; font-weight: 900; margin: 0;">
-            DASHBOARD <span style="color: var(--accent);">//</span>
-          </h1>
-          <p style="color: var(--text-dim); margin-top: 0.5rem;" id="user-email">user@example.com</p>
-        </div>
-        <div class="stat-box" style="min-width: 180px;">
-          <div class="stat-label">Current Tier</div>
-          <div class="stat-value" id="current-tier-badge" style="font-size: 1.5rem;">FREE</div>
-        </div>
+      <div id="loading-state" style="text-align: center; padding: 6rem 0;">
+        <div class="loading-spinner" style="width: 40px; height: 40px; border-width: 4px;"></div>
+        <p style="color: var(--text-dim); margin-top: 1rem;">Authenticating session...</p>
       </div>
 
-      <div class="dashboard-nav">
-        <button class="dashboard-nav-btn active" data-panel="overview">Overview</button>
-        <button class="dashboard-nav-btn" data-panel="api-keys">API Keys</button>
-        <button class="dashboard-nav-btn" data-panel="billing">Billing & Tiers</button>
-        <button class="dashboard-nav-btn" data-panel="webhooks">Webhooks</button>
-        <button class="dashboard-nav-btn" data-panel="logs">Request Logs</button>
-        <button class="dashboard-nav-btn" data-panel="settings">Settings</button>
-      </div>
-
-      <!-- Overview Panel -->
-      <div class="dashboard-panel active" id="panel-overview">
-        <div class="stat-grid">
-          <div class="stat-box">
-            <div class="stat-label">Requests This Month</div>
-            <div class="stat-value" id="requests-used">0</div>
-            <div class="stat-sub" id="requests-limit">of 250 (Free)</div>
+      <div id="dashboard-content" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin: 0;">
+              DASHBOARD <span style="color: var(--accent);">//</span>
+            </h1>
+            <p style="color: var(--text-dim); margin-top: 0.5rem;" id="user-email">Authenticating...</p>
           </div>
-          <div class="stat-box">
-            <div class="stat-label">Remaining</div>
-            <div class="stat-value" id="requests-remaining">250</div>
-            <div class="stat-sub" id="requests-percent">100% available</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Rate Limit</div>
-            <div class="stat-value" id="rate-limit">2 RPM</div>
-            <div class="stat-sub">Requests per minute</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Success Rate</div>
-            <div class="stat-value" id="success-rate">100%</div>
-            <div class="stat-sub">Last 30 days</div>
+          <div class="stat-box" style="min-width: 180px;">
+            <div class="stat-label">Current Tier</div>
+            <div class="stat-value" id="current-tier-badge" style="font-size: 1.5rem;">—</div>
           </div>
         </div>
 
-        <div class="brutal-card" style="padding: 2rem;">
-          <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">
-            // USAGE_TRACKING
-          </h3>
-          <div class="usage-bar-container">
-            <div class="usage-bar-label">
-              <span>Monthly Request Usage</span>
-              <span id="usage-text">0 / 250</span>
+        <div class="dashboard-nav">
+          <button class="dashboard-nav-btn active" data-panel="overview">Overview</button>
+          <button class="dashboard-nav-btn" data-panel="api-keys">API Keys</button>
+          <button class="dashboard-nav-btn" data-panel="billing">Billing & Tiers</button>
+          <button class="dashboard-nav-btn" data-panel="webhooks">Webhooks</button>
+          <button class="dashboard-nav-btn" data-panel="logs">Request Logs</button>
+          <button class="dashboard-nav-btn" data-panel="settings">Settings</button>
+        </div>
+
+        <!-- Overview Panel -->
+        <div class="dashboard-panel active" id="panel-overview">
+          <div class="stat-grid">
+            <div class="stat-box">
+              <div class="stat-label">Requests This Month</div>
+              <div class="stat-value" id="requests-used">0</div>
+              <div class="stat-sub" id="requests-limit">of 250 (Free)</div>
             </div>
-            <div class="usage-bar">
-              <div class="usage-bar-fill" id="usage-bar" style="width: 0%;">
-                <span class="usage-bar-text" id="usage-bar-text">0%</span>
+            <div class="stat-box">
+              <div class="stat-label">Remaining</div>
+              <div class="stat-value" id="requests-remaining">250</div>
+              <div class="stat-sub" id="requests-percent">100% available</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Rate Limit</div>
+              <div class="stat-value" id="rate-limit">2 RPM</div>
+              <div class="stat-sub">Requests per minute</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Success Rate</div>
+              <div class="stat-value" id="success-rate">100%</div>
+              <div class="stat-sub">Last 30 days</div>
+            </div>
+          </div>
+
+          <div class="brutal-card" style="padding: 2rem;">
+            <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">// USAGE_TRACKING</h3>
+            <div class="usage-bar-container">
+              <div class="usage-bar-label">
+                <span>Monthly Request Usage</span>
+                <span id="usage-text">0 / 250</span>
+              </div>
+              <div class="usage-bar">
+                <div class="usage-bar-fill" id="usage-bar" style="width: 0%;">
+                  <span class="usage-bar-text" id="usage-bar-text">0%</span>
+                </div>
+              </div>
+            </div>
+            <div class="usage-bar-container">
+              <div class="usage-bar-label">
+                <span>Rate Limit (per minute)</span>
+                <span id="rate-text">0 / 2</span>
+              </div>
+              <div class="usage-bar">
+                <div class="usage-bar-fill" id="rate-bar" style="width: 0%;">
+                  <span class="usage-bar-text" id="rate-bar-text">0%</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="usage-bar-container">
-            <div class="usage-bar-label">
-              <span>Rate Limit (per minute)</span>
-              <span id="rate-text">0 / 2</span>
-            </div>
-            <div class="usage-bar">
-              <div class="usage-bar-fill" id="rate-bar" style="width: 0%;">
-                <span class="usage-bar-text" id="rate-bar-text">0%</span>
-              </div>
+
+          <div class="brutal-card" style="padding: 2rem; margin-top: 2rem;">
+            <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">// QUICK_ACTIONS</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+              <a href="playground.html" class="btn btn-primary" style="text-decoration: none; text-align: center;">→ Test API</a>
+              <a href="docs.html" class="btn btn-secondary" style="text-decoration: none; text-align: center;">📖 Documentation</a>
+              <button onclick="showPanel('billing')" class="btn btn-secondary">⬆ Upgrade Tier</button>
+              <button onclick="regenerateKey()" class="btn btn-secondary">🔄 New API Key</button>
             </div>
           </div>
         </div>
 
-        <div class="brutal-card" style="padding: 2rem; margin-top: 2rem;">
-          <h3 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-dim);">
-            // QUICK_ACTIONS
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-            <a href="playground.html" class="btn btn-primary" style="text-decoration: none; text-align: center;">
-              → Test API
-            </a>
-            <a href="docs.html" class="btn btn-secondary" style="text-decoration: none; text-align: center;">
-              📖 Documentation
-            </a>
-            <button onclick="showPanel('billing')" class="btn btn-secondary">
-              ⬆ Upgrade Tier
-            </button>
-            <button onclick="regenerateKey()" class="btn btn-secondary">
-              🔄 New API Key
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- API Keys Panel -->
-      <div class="dashboard-panel" id="panel-api-keys">
-        <div class="brutal-card" style="padding: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-            <span style="color: var(--accent);">//</span> API Keys
-          </h3>
-          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
-            Your API key provides access to the RenderKit API. Keep it secret and never expose it in client-side code.
-          </p>
-
-          <div class="form-group">
-            <label>Primary API Key</label>
-            <div class="api-key-display">
-              <span id="api-key-value">rk_dev_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-              <button onclick="copyApiKey()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">
-                Copy
-              </button>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button onclick="regenerateKey()" class="btn btn-secondary">
-              🔄 Regenerate Key
-            </button>
-            <button onclick="showKey()" class="btn btn-secondary">
-              👁 Show/Hide
-            </button>
-          </div>
-
-          <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,68,68,0.1); border: 1px solid #ff4444; border-radius: 8px;">
-            <h4 style="color: #ff4444; margin-bottom: 0.5rem; font-size: 0.9rem;">⚠️ Security Notice</h4>
-            <p style="color: var(--text-dim); font-size: 0.85rem;">
-              Regenerating your API key will immediately invalidate the current key. Update your integrations before regenerating.
+        <!-- API Keys Panel -->
+        <div class="dashboard-panel" id="panel-api-keys">
+          <div class="brutal-card" style="padding: 2rem;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><span style="color: var(--accent);">//</span> API Keys</h3>
+            <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+              Your API keys provide access to the RenderKit API. Keep them secret.
             </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Billing & Tiers Panel -->
-      <div class="dashboard-panel" id="panel-billing">
-        <div class="brutal-card" style="padding: 2rem; margin-bottom: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-            <span style="color: var(--accent);">//</span> Current Plan
-          </h3>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 2rem; font-weight: 900;" id="current-plan-name">FREE</div>
-              <div style="color: var(--text-dim);" id="current-plan-price">$0/month</div>
+            <div id="api-keys-list">
+              <div class="key-item">
+                <span class="key-val" id="api-key-value">Loading...</span>
+                <div class="key-actions">
+                  <button onclick="copyApiKey()" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Copy</button>
+                  <button onclick="toggleKeyVisibility()" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">👁</button>
+                </div>
+              </div>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);" id="current-plan-limit">250 req/mo</div>
-              <div style="color: var(--text-dim);" id="current-plan-rpm">2 RPM</div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+              <button onclick="regenerateKey()" class="btn btn-secondary">🔄 Regenerate Key</button>
+              <button onclick="showCreateKeyDialog()" class="btn btn-secondary">➕ New Key</button>
             </div>
-          </div>
-        </div>
-
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-          <span style="color: var(--accent);">//</span> Available Tiers
-        </h3>
-
-        <div class="tier-card current" id="tier-free">
-          <div class="current-badge">Current</div>
-          <div class="tier-card-header">
-            <div>
-              <div style="font-size: 1.5rem; font-weight: 900;">FREE</div>
-              <div style="color: var(--text-dim); font-size: 0.9rem;">For testing and small projects</div>
-            </div>
-            <div class="tier-card-price">$0<span>/mo</span></div>
-          </div>
-          <ul class="tier-card-features">
-            <li>250 Requests per month</li>
-            <li>2 Requests per minute (RPM)</li>
-            <li>Standard stealth mode</li>
-            <li>Community support</li>
-          </ul>
-        </div>
-
-        <div class="tier-card" id="tier-starter">
-          <div class="tier-card-header">
-            <div>
-              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">STARTER</div>
-              <div style="color: var(--text-dim); font-size: 0.9rem;">For growing applications</div>
-            </div>
-            <div class="tier-card-price">$29<span>/mo</span></div>
-          </div>
-          <ul class="tier-card-features">
-            <li>10,000 Requests per month</li>
-            <li>30 Requests per minute (RPM)</li>
-            <li>Auto-clean heuristics</li>
-            <li>Smart stability engine</li>
-            <li>Email support</li>
-          </ul>
-          <button class="btn-upgrade" onclick="upgradeToTier('Starter')">Upgrade to Starter</button>
-        </div>
-
-        <div class="tier-card" id="tier-expert">
-          <div class="tier-card-header">
-            <div>
-              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">EXPERT</div>
-              <div style="color: var(--text-dim); font-size: 0.9rem;">For high-volume usage</div>
-            </div>
-            <div class="tier-card-price">$99<span>/mo</span></div>
-          </div>
-          <ul class="tier-card-features">
-            <li>50,000 Requests per month</li>
-            <li>120 Requests per minute (RPM)</li>
-            <li>Custom CSS injection</li>
-            <li>HTML template support</li>
-            <li>Priority support</li>
-          </ul>
-          <button class="btn-upgrade" onclick="upgradeToTier('Expert')">Upgrade to Expert</button>
-        </div>
-
-        <div class="tier-card" id="tier-enterprise">
-          <div class="tier-card-header">
-            <div>
-              <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">ENTERPRISE</div>
-              <div style="color: var(--text-dim); font-size: 0.9rem;">For large-scale operations</div>
-            </div>
-            <div class="tier-card-price">$199<span>/mo</span></div>
-          </div>
-          <ul class="tier-card-features">
-            <li>100,000 Requests per month</li>
-            <li>300 Requests per minute (RPM)</li>
-            <li>Dedicated rendering nodes</li>
-            <li>Custom SLA</li>
-            <li>Dedicated support</li>
-          </ul>
-          <button class="btn-upgrade" onclick="upgradeToTier('Enterprise')">Upgrade to Enterprise</button>
-        </div>
-      </div>
-
-      <!-- Webhooks Panel -->
-      <div class="dashboard-panel" id="panel-webhooks">
-        <div class="brutal-card" style="padding: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-            <span style="color: var(--accent);">//</span> Webhook Configuration
-          </h3>
-          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
-            Configure webhooks to receive real-time notifications about your API usage, quota warnings, and billing events.
-          </p>
-
-          <div class="form-group">
-            <label>Webhook Endpoint URL</label>
-            <input type="url" id="webhook-url-input" placeholder="https://your-domain.com/webhooks/renderkit" />
-          </div>
-
-          <div class="form-group">
-            <label>Webhook Signing Secret</label>
-            <div class="api-key-display" style="padding: 1rem;">
-              <span id="webhook-secret">whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-              <button onclick="copyWebhookSecret()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">
-                Copy
-              </button>
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,68,68,0.1); border: 1px solid #ff4444; border-radius: 8px;">
+              <h4 style="color: #ff4444; margin-bottom: 0.5rem; font-size: 0.9rem;">⚠️ Security Notice</h4>
+              <p style="color: var(--text-dim); font-size: 0.85rem;">
+                Regenerating your API key will immediately invalidate the current key. Update your integrations before regenerating.
+              </p>
             </div>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label>Events to Subscribe</label>
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
-                <input type="checkbox" checked style="width: 18px; height: 18px;" />
-                quota.warning (80% usage)
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
-                <input type="checkbox" checked style="width: 18px; height: 18px;" />
-                quota.exceeded (100% usage)
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
-                <input type="checkbox" checked style="width: 18px; height: 18px;" />
-                billing.invoice_created
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.75rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text);">
-                <input type="checkbox" />
-                api.error (5xx errors)
-              </label>
+        <!-- Billing & Tiers Panel -->
+        <div class="dashboard-panel" id="panel-billing">
+          <div class="brutal-card" style="padding: 2rem; margin-bottom: 2rem;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><span style="color: var(--accent);">//</span> Current Plan</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <div style="font-size: 2rem; font-weight: 900;" id="current-plan-name">FREE</div>
+                <div style="color: var(--text-dim);" id="current-plan-price">$0/month</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);" id="current-plan-limit">250 req/mo</div>
+                <div style="color: var(--text-dim);" id="current-plan-rpm">2 RPM</div>
+              </div>
             </div>
           </div>
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><span style="color: var(--accent);">//</span> Available Tiers</h3>
 
-          <button class="btn btn-primary" onclick="saveWebhook()" style="margin-top: 1rem;">
-            Save Webhook Configuration
-          </button>
+          <div class="tier-card current" id="tier-free">
+            <div class="current-badge">Current</div>
+            <div class="tier-card-header">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 900;">FREE</div>
+                <div style="color: var(--text-dim); font-size: 0.9rem;">For testing and small projects</div>
+              </div>
+              <div class="tier-card-price">$0<span>/mo</span></div>
+            </div>
+            <ul class="tier-card-features">
+              <li>250 Requests per month</li>
+              <li>2 Requests per minute (RPM)</li>
+              <li>Standard stealth mode</li>
+              <li>Community support</li>
+            </ul>
+          </div>
+          <div class="tier-card" id="tier-starter">
+            <div class="tier-card-header">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">STARTER</div>
+                <div style="color: var(--text-dim); font-size: 0.9rem;">For growing applications</div>
+              </div>
+              <div class="tier-card-price">$29<span>/mo</span></div>
+            </div>
+            <ul class="tier-card-features">
+              <li>10,000 Requests per month</li>
+              <li>30 Requests per minute (RPM)</li>
+              <li>Auto-clean heuristics</li>
+              <li>Smart stability engine</li>
+              <li>Email support</li>
+            </ul>
+            <button class="btn-upgrade" onclick="upgradeToTier('Starter')">Upgrade to Starter</button>
+          </div>
+          <div class="tier-card" id="tier-expert">
+            <div class="tier-card-header">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">EXPERT</div>
+                <div style="color: var(--text-dim); font-size: 0.9rem;">For high-volume usage</div>
+              </div>
+              <div class="tier-card-price">$99<span>/mo</span></div>
+            </div>
+            <ul class="tier-card-features">
+              <li>50,000 Requests per month</li>
+              <li>120 Requests per minute (RPM)</li>
+              <li>Custom CSS injection</li>
+              <li>HTML template support</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="btn-upgrade" onclick="upgradeToTier('Expert')">Upgrade to Expert</button>
+          </div>
+          <div class="tier-card" id="tier-enterprise">
+            <div class="tier-card-header">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent);">ENTERPRISE</div>
+                <div style="color: var(--text-dim); font-size: 0.9rem;">For large-scale operations</div>
+              </div>
+              <div class="tier-card-price">$199<span>/mo</span></div>
+            </div>
+            <ul class="tier-card-features">
+              <li>100,000 Requests per month</li>
+              <li>300 Requests per minute (RPM)</li>
+              <li>Dedicated rendering nodes</li>
+              <li>Custom SLA</li>
+              <li>Dedicated support</li>
+            </ul>
+            <button class="btn-upgrade" onclick="upgradeToTier('Enterprise')">Upgrade to Enterprise</button>
+          </div>
         </div>
-      </div>
 
-      <!-- Request Logs Panel -->
-      <div class="dashboard-panel" id="panel-logs">
-        <div class="brutal-card" style="padding: 2rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1.2rem;">
-              <span style="color: var(--accent);">//</span> Request Logs
-            </h3>
-            <div style="display: flex; gap: 0.5rem;">
-              <select style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
-                <option>All Endpoints</option>
-                <option>/v1/screenshot/capture</option>
-                <option>/v1/screenshot/pdf</option>
-                <option>/v1/screenshot/og</option>
-              </select>
-              <select style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
-                <option>Last 7 Days</option>
-                <option>Last 30 Days</option>
-                <option>All Time</option>
-              </select>
+        <!-- Webhooks Panel -->
+        <div class="dashboard-panel" id="panel-webhooks">
+          <div class="brutal-card" style="padding: 2rem;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><span style="color: var(--accent);">//</span> Webhook Configuration</h3>
+            <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+              Configure webhooks to receive real-time notifications about your API usage, quota warnings, and billing events.
+            </p>
+            <div class="form-group">
+              <label>Webhook Endpoint URL</label>
+              <input type="url" id="webhook-url-input" placeholder="https://your-domain.com/webhooks/renderkit" />
+            </div>
+            <div class="form-group">
+              <label>Webhook Signing Secret</label>
+              <div class="api-key-display" style="padding: 1rem;">
+                <span id="webhook-secret">whsec_xxxxxxxxxxxxxxxxxxxx</span>
+                <button onclick="copyText('webhook-secret')" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.75rem;">Copy</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveWebhook()" style="margin-top: 1rem;">Save Webhook Configuration</button>
+          </div>
+        </div>
+
+        <!-- Request Logs Panel -->
+        <div class="dashboard-panel" id="panel-logs">
+          <div class="brutal-card" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+              <h3 style="font-size: 1.2rem;"><span style="color: var(--accent);">//</span> Request Logs</h3>
+              <div style="display: flex; gap: 0.5rem;">
+                <select id="log-endpoint-filter" style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
+                  <option value="">All Endpoints</option>
+                  <option value="/v1/screenshot/capture">/v1/screenshot/capture</option>
+                  <option value="/v1/screenshot/pdf">/v1/screenshot/pdf</option>
+                  <option value="/v1/screenshot/og">/v1/screenshot/og</option>
+                </select>
+                <select id="log-time-filter" style="background: #111; border: 2px solid #333; color: var(--text); padding: 0.5rem; border-radius: 4px;">
+                  <option value="7">Last 7 Days</option>
+                  <option value="30" selected>Last 30 Days</option>
+                  <option value="90">All Time</option>
+                </select>
+              </div>
+            </div>
+            <div id="logs-empty" style="text-align: center; padding: 3rem; color: var(--text-dim);">
+              No request logs yet. Start using the API to see your logs here.
+            </div>
+            <div id="logs-table-wrapper" style="display: none;">
+              <table class="log-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Duration</th>
+                    <th>Timestamp</th>
+                    <th>IP</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-tbody"></tbody>
+              </table>
+              <div style="margin-top: 1.5rem; text-align: center;">
+                <button id="load-more-logs" class="btn btn-secondary">Load More</button>
+              </div>
             </div>
           </div>
-
-          <table class="log-table">
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Endpoint</th>
-                <th>Duration</th>
-                <th>Timestamp</th>
-                <th>IP</th>
-              </tr>
-            </thead>
-            <tbody id="logs-tbody">
-              <tr>
-                <td><span class="status-dot success"></span>200</td>
-                <td>POST /v1/screenshot/capture</td>
-                <td>2.3s</td>
-                <td>2026-06-08 19:32:15</td>
-                <td>192.168.1.1</td>
-              </tr>
-              <tr>
-                <td><span class="status-dot success"></span>200</td>
-                <td>POST /v1/screenshot/og</td>
-                <td>0.8s</td>
-                <td>2026-06-08 19:28:42</td>
-                <td>192.168.1.1</td>
-              </tr>
-              <tr>
-                <td><span class="status-dot success"></span>200</td>
-                <td>POST /v1/screenshot/pdf</td>
-                <td>4.1s</td>
-                <td>2026-06-08 18:55:03</td>
-                <td>192.168.1.1</td>
-              </tr>
-              <tr>
-                <td><span class="status-dot error"></span>429</td>
-                <td>POST /v1/screenshot/capture</td>
-                <td>0.1s</td>
-                <td>2026-06-07 14:22:18</td>
-                <td>192.168.1.1</td>
-              </tr>
-              <tr>
-                <td><span class="status-dot success"></span>200</td>
-                <td>POST /v1/screenshot/capture</td>
-                <td>3.2s</td>
-                <td>2026-06-07 14:20:45</td>
-                <td>192.168.1.1</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div style="margin-top: 1.5rem; text-align: center;">
-            <button class="btn btn-secondary" onclick="loadMoreLogs()">Load More</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Settings Panel -->
-      <div class="dashboard-panel" id="panel-settings">
-        <div class="brutal-card" style="padding: 2rem;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">
-            <span style="color: var(--accent);">//</span> Account Settings
-          </h3>
-
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="settings-email" value="user@example.com" />
-          </div>
-
-          <div class="form-group">
-            <label>Display Name</label>
-            <input type="text" id="settings-name" value="RenderKit User" />
-          </div>
-
-          <div class="form-group">
-            <label>Company Name (Optional)</label>
-            <input type="text" id="settings-company" placeholder="Your company name" />
-          </div>
-
-          <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
         </div>
 
-        <div class="brutal-card" style="padding: 2rem; margin-top: 2rem; border-color: #ff4444;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: #ff4444;">
-            ⚠️ Danger Zone
-          </h3>
-          <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
-            These actions are irreversible. Please proceed with caution.
-          </p>
-          <div style="display: flex; gap: 1rem;">
-            <button class="btn" style="border-color: #ff4444; color: #ff4444;" onclick="deleteAccount()">
-              Delete Account
-            </button>
-            <button class="btn" style="border-color: #ffaa00; color: #ffaa00;" onclick="exportData()">
-              Export Data
-            </button>
+        <!-- Settings Panel -->
+        <div class="dashboard-panel" id="panel-settings">
+          <div class="brutal-card" style="padding: 2rem;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;"><span style="color: var(--accent);">//</span> Account Settings</h3>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="settings-email" value="" disabled style="opacity: 0.6;" />
+            </div>
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" id="settings-name" placeholder="Your display name" />
+            </div>
+            <div class="form-group">
+              <label>Company Name (Optional)</label>
+              <input type="text" id="settings-company" placeholder="Your company name" />
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+          </div>
+          <div class="brutal-card" style="padding: 2rem; margin-top: 2rem; border-color: #ff4444;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: #ff4444;">⚠️ Danger Zone</h3>
+            <p style="color: var(--text-dim); margin-bottom: 1.5rem; font-size: 0.9rem;">
+              These actions are irreversible. Please proceed with caution.
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <button class="btn" style="border-color: #ff4444; color: #ff4444;" onclick="deleteAccount()">Delete Account</button>
+              <button class="btn" style="border-color: #ffaa00; color: #ffaa00;" onclick="exportData()">Export Data</button>
+            </div>
           </div>
         </div>
       </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div id="toast" class="toast"></div>
+
     <script src="config.js"></script>
     <script>
-      // --- CONFIG ---
       const config = window.RENDERKIT_CONFIG || {};
       const supabase = window.supabase
         ? window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY)
         : null;
 
-      // Dashboard state
-      const state = {
+      let state = {
         user: null,
+        profile: null,
         tier: 'Free',
-        apiKey: 'rk_' + 'dev_' + 'x'.repeat(32),
+        apiKey: '',
+        allKeys: [],
+        apiKeysVisible: false,
         usage: { used: 0, limit: 250 },
-        rateLimit: 2
+        logs: [],
+        logsPage: 0,
+        hasMoreLogs: true
       };
 
       const tierConfig = {
@@ -732,44 +657,244 @@
         'Enterprise': { limit: 100000, rpm: 300, price: 199 }
       };
 
-      // Initialize dashboard
-      document.addEventListener('DOMContentLoaded', () => {
+      function showToast(msg, isError = false) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast' + (isError ? ' error' : '') + ' show';
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+
+      function formatDate(d) {
+        const date = new Date(d);
+        return date.toLocaleString('en-US', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+      }
+
+      // --- Auth Guard ---
+      document.addEventListener('DOMContentLoaded', async () => {
         if (!supabase) {
+          window.location.href = 'auth.html?error=no_supabase';
+          return;
+        }
+
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error || !session?.user) {
           window.location.href = 'auth.html';
           return;
         }
 
-        // Check Supabase session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          if (!session?.user) {
-            window.location.href = 'auth.html';
-            return;
-          }
-
-          state.user = session.user;
-          document.getElementById('user-email').textContent = session.user.email || 'user@example.com';
-          document.getElementById('settings-email').value = session.user.email || '';
-
-          // Load tier from profiles table
-          supabase.from('profiles').select('*').single().then(({ data, error }) => {
-            const tier = data?.tier || 'Free';
-            state.tier = tier;
-            state.apiKey = data?.api_key || state.apiKey;
-            document.getElementById('api-key-value').textContent = state.apiKey;
-            updateDashboardForTier(tier);
-          }).catch(() => {
-            updateDashboardForTier('Free');
-          });
-        });
-
-        // Setup navigation
-        document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            showPanel(btn.dataset.panel);
-          });
-        });
+        state.user = session.user;
+        await loadDashboardData();
       });
 
+      // Listen for auth state changes (for logout detection)
+      if (supabase) {
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT') {
+            window.location.href = 'index.html';
+          }
+        });
+      }
+
+      async function loadDashboardData() {
+        try {
+          // Load profile
+          const { data: profile, error: profileErr } = await supabase
+            .from('profiles')
+            .select('*')
+            .single();
+
+          if (profileErr && profileErr.code !== 'PGRST116') {
+            console.error('Profile load error:', profileErr);
+          }
+
+          state.profile = profile || {};
+          state.tier = profile?.tier || 'Free';
+          state.apiKey = profile?.api_key || '';
+
+          // Load all API keys
+          const { data: keys } = await supabase
+            .from('api_keys')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          state.allKeys = keys || [];
+
+          // Load usage logs for this month
+          const startOfMonth = new Date();
+          startOfMonth.setDate(1);
+          startOfMonth.setHours(0, 0, 0, 0);
+
+          const { data: logs, error: logsErr } = await supabase
+            .from('usage_logs')
+            .select('*')
+            .gte('created_at', startOfMonth.toISOString())
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+          if (!logsErr) {
+            state.logs = logs || [];
+            state.usage.used = state.logs.length;
+          }
+
+          // Update UI
+          updateUI();
+          document.getElementById('loading-state').style.display = 'none';
+          document.getElementById('dashboard-content').style.display = 'block';
+        } catch (err) {
+          console.error('Dashboard load error:', err);
+          showToast('Failed to load dashboard data', true);
+          document.getElementById('loading-state').innerHTML = `
+            <p style="color: #ff4444;">Failed to load dashboard. <button onclick="location.reload()" class="btn btn-secondary">Retry</button></p>
+          `;
+        }
+      }
+
+      function updateUI() {
+        const config_tier = tierConfig[state.tier] || tierConfig['Free'];
+        state.usage.limit = config_tier.limit;
+
+        // User info
+        document.getElementById('user-email').textContent = state.user?.email || 'user@example.com';
+
+        // Overview stats
+        document.getElementById('current-tier-badge').textContent = state.tier.toUpperCase();
+        document.getElementById('requests-limit').textContent = `of ${config_tier.limit.toLocaleString()} (${state.tier})`;
+        document.getElementById('rate-limit').textContent = `${config_tier.rpm} RPM`;
+        document.getElementById('requests-used').textContent = state.usage.used.toLocaleString();
+        document.getElementById('requests-remaining').textContent = (config_tier.limit - state.usage.used).toLocaleString();
+
+        const percent = Math.min((state.usage.used / config_tier.limit) * 100, 100);
+        const availPercent = Math.max(100 - percent, 0);
+        document.getElementById('requests-percent').textContent = availPercent.toFixed(1) + '% available';
+        document.getElementById('usage-text').textContent = `${state.usage.used.toLocaleString()} / ${config_tier.limit.toLocaleString()}`;
+        document.getElementById('rate-text').textContent = `0 / ${config_tier.rpm}`;
+
+        document.getElementById('usage-bar').style.width = percent + '%';
+        document.getElementById('usage-bar-text').textContent = percent.toFixed(1) + '%';
+
+        const usageBar = document.getElementById('usage-bar');
+        usageBar.classList.remove('warning', 'danger');
+        if (percent >= 90) usageBar.classList.add('danger');
+        else if (percent >= 70) usageBar.classList.add('warning');
+
+        // Billing panel
+        document.getElementById('current-plan-name').textContent = state.tier.toUpperCase();
+        document.getElementById('current-plan-price').textContent = `$${config_tier.price}/month`;
+        document.getElementById('current-plan-limit').textContent = `${config_tier.limit.toLocaleString()} req/mo`;
+        document.getElementById('current-plan-rpm').textContent = `${config_tier.rpm} RPM`;
+
+        // Tier cards
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('current'));
+        document.querySelectorAll('.tier-card .current-badge').forEach(b => b.remove());
+
+        const currentCard = document.getElementById('tier-' + state.tier.toLowerCase());
+        if (currentCard) {
+          currentCard.classList.add('current');
+          const badge = document.createElement('div');
+          badge.className = 'current-badge';
+          badge.textContent = 'Current';
+          currentCard.querySelector('.tier-card-header').appendChild(badge);
+        }
+
+        // API Keys
+        updateApiKeysUI();
+
+        // Logs
+        updateLogsUI();
+
+        // Settings
+        document.getElementById('settings-email').value = state.user?.email || '';
+        document.getElementById('settings-name').value = state.profile?.display_name || '';
+        document.getElementById('settings-company').value = state.profile?.company || '';
+        document.getElementById('webhook-url-input').value = state.profile?.webhook_url || '';
+
+        // Webhook secret
+        if (state.profile?.webhook_secret) {
+          document.getElementById('webhook-secret').textContent = state.profile.webhook_secret;
+        }
+
+        // Nav setup
+        document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
+          btn.addEventListener('click', () => showPanel(btn.dataset.panel));
+        });
+      }
+
+      function updateApiKeysUI() {
+        const container = document.getElementById('api-keys-list');
+        if (state.allKeys.length === 0) {
+          container.innerHTML = '<p style="color: var(--text-dim);">No API keys found.</p>';
+          return;
+        }
+
+        container.innerHTML = state.allKeys.map(key => {
+          const displayVal = state.apiKeysVisible ? key.key_value : maskKey(key.key_value);
+          const isPrimary = key.label === 'Primary';
+          return `
+            <div class="key-item">
+              <div style="flex:1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                  <strong style="font-size: 0.85rem;">${key.label}</strong>
+                  ${isPrimary ? '<span style="font-size: 0.6rem; padding: 0.15rem 0.4rem; background: var(--accent); color: #000; border-radius: 3px; font-weight: 900;">PRIMARY</span>' : ''}
+                  ${!key.is_active ? '<span style="font-size: 0.6rem; padding: 0.15rem 0.4rem; background: #ff4444; color: #fff; border-radius: 3px; font-weight: 900;">REVOKED</span>' : ''}
+                </div>
+                <span class="key-val">${displayVal}</span>
+              </div>
+              <div class="key-actions">
+                <button onclick="copyTextValue('${key.key_value}')" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Copy</button>
+                ${!isPrimary && key.is_active ? `<button onclick="revokeKey('${key.id}')" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.7rem; border-color: #ff4444; color: #ff4444;">Revoke</button>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('api-key-value').textContent = state.apiKeysVisible ? state.apiKey : maskKey(state.apiKey);
+      }
+
+      function maskKey(key) {
+        if (!key || key.length < 10) return key || '—';
+        return key.substring(0, 7) + '••••' + key.substring(key.length - 4);
+      }
+
+      function updateLogsUI() {
+        const tbody = document.getElementById('logs-tbody');
+        const empty = document.getElementById('logs-empty');
+        const wrapper = document.getElementById('logs-table-wrapper');
+        const loadMore = document.getElementById('load-more-logs');
+
+        if (state.logs.length === 0) {
+          empty.style.display = 'block';
+          wrapper.style.display = 'none';
+          return;
+        }
+
+        empty.style.display = 'none';
+        wrapper.style.display = 'block';
+
+        tbody.innerHTML = state.logs.slice(0, 10 + state.logsPage * 10).map(log => {
+          const statusClass = log.status_code >= 200 && log.status_code < 300 ? 'success'
+            : log.status_code >= 400 ? 'error' : 'pending';
+          return `
+            <tr>
+              <td><span class="status-dot ${statusClass}"></span>${log.status_code}</td>
+              <td>${log.method || 'POST'}</td>
+              <td>${log.endpoint || '—'}</td>
+              <td>${log.duration_ms ? (log.duration_ms / 1000).toFixed(1) + 's' : '—'}</td>
+              <td>${formatDate(log.created_at)}</td>
+              <td>${log.ip_address || '—'}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const shownCount = 10 + state.logsPage * 10;
+        state.hasMoreLogs = shownCount < state.logs.length;
+        loadMore.style.display = state.hasMoreLogs ? 'inline-block' : 'none';
+        loadMore.onclick = () => { state.logsPage++; updateLogsUI(); };
+      }
+
+      // --- Navigation ---
       function showPanel(panelId) {
         document.querySelectorAll('.dashboard-nav-btn').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.panel === panelId);
@@ -779,130 +904,198 @@
         });
       }
 
-      function updateDashboardForTier(tier) {
-        const config = tierConfig[tier];
-        state.tier = tier;
-        state.usage.limit = config.limit;
-        state.rateLimit = config.rpm;
-
-        // Update overview
-        document.getElementById('current-tier-badge').textContent = tier.toUpperCase();
-        document.getElementById('requests-limit').textContent = `of ${config.limit.toLocaleString()} (${tier})`;
-        document.getElementById('rate-limit').textContent = `${config.rpm} RPM`;
-        document.getElementById('usage-text').textContent = `${state.usage.used.toLocaleString()} / ${config.limit.toLocaleString()}`;
-        document.getElementById('rate-text').textContent = `0 / ${config.rpm}`;
-
-        const percent = (state.usage.used / config.limit) * 100;
-        document.getElementById('usage-bar').style.width = percent + '%';
-        document.getElementById('usage-bar-text').textContent = percent.toFixed(1) + '%';
-        document.getElementById('requests-remaining').textContent = (config.limit - state.usage.used).toLocaleString();
-        document.getElementById('requests-percent').textContent = (100 - percent).toFixed(1) + '% available';
-
-        // Update usage bar color
-        const usageBar = document.getElementById('usage-bar');
-        usageBar.classList.remove('warning', 'danger');
-        if (percent >= 90) usageBar.classList.add('danger');
-        else if (percent >= 70) usageBar.classList.add('warning');
-
-        // Update billing panel
-        document.getElementById('current-plan-name').textContent = tier.toUpperCase();
-        document.getElementById('current-plan-price').textContent = `$${config.price}/month`;
-        document.getElementById('current-plan-limit').textContent = `${config.limit.toLocaleString()} req/mo`;
-        document.getElementById('current-plan-rpm').textContent = `${config.rpm} RPM`;
-
-        // Update tier cards
-        document.querySelectorAll('.tier-card').forEach(card => {
-          card.classList.remove('current');
-        });
-        document.querySelectorAll('.tier-card .current-badge').forEach(badge => {
-          badge.remove();
-        });
-
-        const currentTierCard = document.getElementById('tier-' + tier.toLowerCase());
-        if (currentTierCard) {
-          currentTierCard.classList.add('current');
-          const badge = document.createElement('div');
-          badge.className = 'current-badge';
-          badge.textContent = 'Current';
-          currentTierCard.querySelector('.tier-card-header').appendChild(badge);
+      // --- Tier Upgrade ---
+      async function upgradeToTier(tier) {
+        if (tier === state.tier) {
+          showToast('Already on this plan');
+          return;
         }
-      }
+        const c = tierConfig[tier];
+        if (confirm(`Upgrade to ${tier} plan for $${c.price}/month?`)) {
+          try {
+            const { error } = await supabase
+              .from('profiles')
+              .update({ tier, updated_at: new Date().toISOString() })
+              .eq('id', state.user.id);
 
-      function upgradeToTier(tier) {
-        if (tier === state.tier) return;
-
-        const config = tierConfig[tier];
-        if (confirm(`Upgrade to ${tier} plan for $${config.price}/month? You'll be redirected to payment.`)) {
-          // Simulate upgrade (in production, redirect to Dodo Payments)
-          localStorage.setItem('renderkit_tier', tier);
-          updateDashboardForTier(tier);
-          alert(`Successfully upgraded to ${tier}! Your new limits are active.`);
-        }
-      }
-
-      function copyApiKey() {
-        navigator.clipboard.writeText(state.apiKey).then(() => {
-          alert('API key copied to clipboard!');
-        });
-      }
-
-      function showKey() {
-        const el = document.getElementById('api-key-value');
-        if (el.textContent.includes('x')) {
-          el.textContent = state.apiKey;
-        } else {
-          el.textContent = 'rk_' + 'dev_' + 'x'.repeat(32);
-        }
-      }
-
-      function regenerateKey() {
-        if (confirm('Are you sure? This will invalidate your current API key immediately.')) {
-          state.apiKey = 'rk_' + 'dev_' + generateRandomKey(32);
-          document.getElementById('api-key-value').textContent = state.apiKey;
-          alert('New API key generated! Update your integrations.');
-        }
-      }
-
-      function copyWebhookSecret() {
-        const secret = document.getElementById('webhook-secret').textContent;
-        navigator.clipboard.writeText(secret).then(() => {
-          alert('Webhook secret copied!');
-        });
-      }
-
-      function saveWebhook() {
-        const url = document.getElementById('webhook-url-input').value;
-        if (url) {
-          localStorage.setItem('renderkit_webhook', url);
-          alert('Webhook configuration saved!');
-        } else {
-          alert('Please enter a webhook URL.');
-        }
-      }
-
-      function saveSettings() {
-        const email = document.getElementById('settings-email').value;
-        const name = document.getElementById('settings-name').value;
-        localStorage.setItem('renderkit_user', JSON.stringify({ email, name }));
-        document.getElementById('user-email').textContent = email;
-        alert('Settings saved!');
-      }
-
-      function deleteAccount() {
-        if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-          if (confirm('This will delete all your data, API keys, and billing information. Type "DELETE" to confirm.')) {
-            if (supabase) supabase.auth.signOut();
-            localStorage.clear();
-            window.location.href = 'auth.html';
+            if (error) throw error;
+            state.tier = tier;
+            updateUI();
+            showToast(`Successfully upgraded to ${tier}!`);
+          } catch (err) {
+            showToast('Upgrade failed: ' + err.message, true);
           }
+        }
+      }
+
+      // --- API Keys ---
+      function copyApiKey() {
+        if (state.apiKey) {
+          navigator.clipboard.writeText(state.apiKey).then(() => showToast('API key copied!'));
+        }
+      }
+
+      function copyTextValue(val) {
+        navigator.clipboard.writeText(val).then(() => showToast('Copied!'));
+      }
+
+      function copyText(elementId) {
+        const el = document.getElementById(elementId);
+        if (el) navigator.clipboard.writeText(el.textContent).then(() => showToast('Copied!'));
+      }
+
+      function toggleKeyVisibility() {
+        state.apiKeysVisible = !state.apiKeysVisible;
+        updateApiKeysUI();
+      }
+
+      async function regenerateKey() {
+        if (!confirm('Are you sure? This will invalidate your current API key immediately.')) return;
+
+        try {
+          const newKey = 'rk_' + 'dev_' + generateRandomKey(32);
+
+          // Update profile's primary key
+          const { error: profileErr } = await supabase
+            .from('profiles')
+            .update({ api_key: newKey, updated_at: new Date().toISOString() })
+            .eq('id', state.user.id);
+
+          if (profileErr) throw profileErr;
+
+          // Insert new key, delete old primary
+          await supabase.from('api_keys').insert({
+            user_id: state.user.id,
+            key_value: newKey,
+            label: 'Primary'
+          });
+
+          // Revoke old primary keys
+          await supabase.from('api_keys')
+            .update({ is_active: false })
+            .eq('user_id', state.user.id)
+            .eq('label', 'Primary')
+            .neq('key_value', newKey);
+
+          state.apiKey = newKey;
+          await loadDashboardData();
+          showToast('New API key generated! Update your integrations.');
+        } catch (err) {
+          showToast('Failed to regenerate key: ' + err.message, true);
+        }
+      }
+
+      function showCreateKeyDialog() {
+        const label = prompt('Enter a label for your new API key (e.g., "Production", "Staging"):');
+        if (!label) return;
+        createApiKey(label);
+      }
+
+      async function createApiKey(label) {
+        try {
+          const newKey = 'rk_' + 'dev_' + generateRandomKey(32);
+          const { error } = await supabase.from('api_keys').insert({
+            user_id: state.user.id,
+            key_value: newKey,
+            label: label
+          });
+          if (error) throw error;
+          await loadDashboardData();
+          showToast(`Key "${label}" created!`);
+        } catch (err) {
+          showToast('Failed to create key: ' + err.message, true);
+        }
+      }
+
+      async function revokeKey(keyId) {
+        if (!confirm('Revoke this API key? This action cannot be undone.')) return;
+        try {
+          const { error } = await supabase
+            .from('api_keys')
+            .update({ is_active: false })
+            .eq('id', keyId)
+            .eq('user_id', state.user.id);
+
+          if (error) throw error;
+          await loadDashboardData();
+          showToast('API key revoked.');
+        } catch (err) {
+          showToast('Failed to revoke key: ' + err.message, true);
+        }
+      }
+
+      // --- Webhooks ---
+      async function saveWebhook() {
+        const url = document.getElementById('webhook-url-input').value;
+        if (!url) { showToast('Please enter a webhook URL.', true); return; }
+
+        try {
+          const secret = 'whsec_' + generateRandomKey(32);
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              webhook_url: url,
+              webhook_secret: secret,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', state.user.id);
+
+          if (error) throw error;
+          document.getElementById('webhook-secret').textContent = secret;
+          showToast('Webhook configuration saved!');
+        } catch (err) {
+          showToast('Failed to save webhook: ' + err.message, true);
+        }
+      }
+
+      // --- Settings ---
+      async function saveSettings() {
+        const name = document.getElementById('settings-name').value;
+        const company = document.getElementById('settings-company').value;
+
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              display_name: name,
+              company: company,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', state.user.id);
+
+          if (error) throw error;
+          showToast('Settings saved!');
+        } catch (err) {
+          showToast('Failed to save settings: ' + err.message, true);
+        }
+      }
+
+      async function deleteAccount() {
+        if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+        if (!confirm('This will delete all your data, API keys, and billing information. Type "DELETE" to confirm.')) return;
+
+        try {
+          // Delete user data
+          await supabase.from('api_keys').delete().eq('user_id', state.user.id);
+          await supabase.from('usage_logs').delete().eq('user_id', state.user.id);
+          await supabase.from('profiles').delete().eq('id', state.user.id);
+
+          // Sign out
+          await supabase.auth.signOut();
+          localStorage.clear();
+          window.location.href = 'index.html';
+        } catch (err) {
+          showToast('Failed to delete account: ' + err.message, true);
         }
       }
 
       function exportData() {
         const data = {
-          user: state.user,
+          user: { email: state.user?.email, id: state.user?.id },
+          profile: state.profile,
           tier: state.tier,
           usage: state.usage,
+          logs: state.logs.slice(0, 100),
           exportDate: new Date().toISOString()
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -911,21 +1104,8 @@
         a.href = url;
         a.download = 'renderkit-data-export.json';
         a.click();
-      }
-
-      function loadMoreLogs() {
-        const tbody = document.getElementById('logs-tbody');
-        for (let i = 0; i < 5; i++) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><span class="status-dot success"></span>200</td>
-            <td>POST /v1/screenshot/capture</td>
-            <td>${(Math.random() * 5 + 1).toFixed(1)}s</td>
-            <td>2026-06-0${Math.floor(Math.random() * 7) + 1} ${Math.floor(Math.random() * 24)}:${Math.floor(Math.random() * 60)}:${Math.floor(Math.random() * 60)}</td>
-            <td>192.168.1.${Math.floor(Math.random() * 255)}</td>
-          `;
-          tbody.appendChild(tr);
-        }
+        URL.revokeObjectURL(url);
+        showToast('Data exported!');
       }
 
       function generateRandomKey(length) {

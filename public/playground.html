@@ -1,114 +1,262 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>RenderKit API - Live Playground</title>
-        <link rel="stylesheet" href="styles.css" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap"
-            rel="stylesheet"
-        />
-    </head>
-    <body>
-        <header>
-            <nav>
-                <div class="logo">RENDER<span>KIT</span></div>
-                <div class="nav-links">
-                    <a href="index.html">Back Home</a>
-                    <a href="docs.html">Docs</a>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RenderKit API - Live Playground</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      .playground-container {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      @media (max-width: 1024px) {
+        .playground-container { grid-template-columns: 1fr; }
+      }
+      .controls-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .control-group {
+        background: #111;
+        border: 1px solid #222;
+        padding: 1.5rem;
+        border-radius: 8px;
+      }
+      .control-group label {
+        display: block;
+        color: var(--text-dim);
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.75rem;
+      }
+      .control-group input[type="text"],
+      .control-group input[type="url"],
+      .control-group select {
+        width: 100%;
+        padding: 1rem;
+        background: #000;
+        color: #fff;
+        border: 2px solid #333;
+        font: inherit;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+      }
+      .control-group input:focus, .control-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        color: var(--text);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: normal;
+        cursor: pointer;
+      }
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .preview-area {
+        background: #0a0a0a;
+        border: 2px solid #222;
+        border-radius: 12px;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-weight: 900;
+        text-transform: uppercase;
+        position: relative;
+        overflow: hidden;
+      }
+      .preview-area img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+      }
+      .render-status {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        z-index: 10;
+      }
+      .render-status .loader {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0,255,65,0.2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .error-msg {
+        display: none;
+        background: rgba(255,68,68,0.1);
+        border: 1px solid #ff4444;
+        color: #ff4444;
+        padding: 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+      }
+      .result-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      .result-meta .meta-item {
+        background: #111;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+      .result-meta .meta-item strong {
+        color: var(--accent);
+      }
+      .endpoint-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #222;
+      }
+      .endpoint-tab {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .endpoint-tab:hover { color: var(--text); }
+      .endpoint-tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">RENDER<span>KIT</span></div>
+            <div class="nav-links">
+                <a href="index.html">Back Home</a>
+                <a href="docs.html">Docs</a>
+                <a href="dashboard.html" id="nav-dashboard" class="btn btn-nav" style="padding: 0.6rem 1.2rem; font-size: 0.8rem; text-decoration: none; display: none;">Dashboard</a>
+                <span id="login-btn-container">
                     <a href="auth.html" class="btn btn-nav" style="padding: 0.6rem 1.2rem; font-size: 0.8rem; text-decoration: none;">Login</a>
-                </div>
-            </nav>
-        </header>
+                </span>
+            </div>
+        </nav>
+    </header>
 
-        <main class="container">
-            <div class="hero" style="margin-bottom: 3rem">
-                <div class="hero-badge">LIVE PLAYGROUND</div>
-                <h1>TEST THE <span>ENGINE.</span></h1>
-                <p class="subtitle">
-                    Enter any URL below to see our advanced rendering engine in
-                    action. No mocks, just raw API power.
-                </p>
+    <main class="container">
+        <div class="hero" style="margin-bottom: 2rem">
+            <div class="hero-badge">LIVE PLAYGROUND</div>
+            <h1>TEST THE <span>ENGINE.</span></h1>
+            <p class="subtitle">Enter any URL below to see our advanced rendering engine in action. No mocks, just raw API power.</p>
+        </div>
+
+        <div class="endpoint-tabs">
+            <button class="endpoint-tab active" data-endpoint="capture">📸 Screenshot</button>
+            <button class="endpoint-tab" data-endpoint="pdf">📄 PDF</button>
+            <button class="endpoint-tab" data-endpoint="og">🖼 OG Card</button>
+        </div>
+
+        <div class="playground-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Target URL</label>
+                    <input type="url" id="target-url" placeholder="https://example.com" value="https://news.ycombinator.com" />
+                </div>
+
+                <div class="control-group" id="capture-options">
+                    <label>Options</label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-clean" checked /> Auto Clean Mode
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-wait" checked /> Smart Stabilization
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-freeze" checked /> Freeze Animations
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="opt-debug" /> Debug Mode
+                    </label>
+                </div>
+
+                <div class="control-group" id="og-options" style="display:none;">
+                    <label>OG Card Options</label>
+                    <div style="display: grid; gap: 0.75rem;">
+                        <input type="text" id="og-title" placeholder="Title (e.g., Breaking News)" />
+                        <input type="text" id="og-description" placeholder="Description" />
+                        <input type="text" id="og-image" placeholder="Image URL (optional)" />
+                    </div>
+                </div>
+
+                <button id="render-btn" class="btn btn-primary" style="width: 100%; padding: 1.2rem; font-size: 1rem;">
+                    Render Screenshot
+                </button>
+                <div id="error-display" class="error-msg"></div>
             </div>
 
-            <div class="playground-container">
-                <div class="controls">
-                    <div class="control-group">
-                        <label>Target URL</label>
-                        <input
-                            type="text"
-                            id="target-url"
-                            placeholder="https://example.com"
-                            value="https://news.ycombinator.com"
-                        />
-                    </div>
-
-                    <div class="control-group">
-                        <label>Advanced Options</label>
-                        <label class="checkbox-group">
-                            <input type="checkbox" id="opt-clean" checked />
-                            Auto Clean Mode
-                        </label>
-                        <label class="checkbox-group">
-                            <input type="checkbox" id="opt-wait" checked />
-                            Smart Stabilization
-                        </label>
-                        <label class="checkbox-group">
-                            <input type="checkbox" id="opt-freeze" checked />
-                            Freeze Animations
-                        </label>
-                        <label class="checkbox-group">
-                            <input type="checkbox" id="opt-debug" /> Debug Mode
-                        </label>
-                    </div>
-
-                    <button
-                        id="render-btn"
-                        class="btn btn-primary"
-                        style="width: 100%"
-                    >
-                        Render Screenshot
-                    </button>
-                    <div id="error-display" class="error-msg"></div>
-                </div>
-
+            <div>
                 <div class="preview-area" id="preview-area">
-                    <div
-                        id="placeholder-text"
-                        style="
-                            color: #444;
-                            font-weight: 900;
-                            text-transform: uppercase;
-                        "
-                    >
-                        Awaiting Input...
-                    </div>
+                    <div id="placeholder-text">Awaiting Input...</div>
                     <div id="render-status" class="render-status">
-                        RENDERING...
+                        <div class="loader"></div>
+                        <div style="color: var(--accent); font-weight: 900;">RENDERING...</div>
                     </div>
                 </div>
+                <div id="result-meta" class="result-meta" style="display:none;"></div>
             </div>
+        </div>
 
-            <div id="debug-info" style="margin-top: 2rem; display: none">
-                <div class="code-window">
-                    <div class="window-header">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <div class="title">RENDER_LOGS.JSON</div>
-                    </div>
-                    <div
-                        class="code-content"
-                        id="debug-content"
-                        style="font-size: 0.9rem; padding: 1.5rem"
-                    ></div>
+        <div id="debug-info" style="margin-top: 2rem; display: none">
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                    <div class="title">RENDER_LOGS.JSON</div>
                 </div>
+                <div class="code-content" id="debug-content" style="font-size: 0.9rem; padding: 1.5rem;"></div>
             </div>
-        </main>
+        </div>
+    </main>
 
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script src="config.js"></script>
-        <script src="playground.js"></script>
-    </body>
+    <script src="config.js"></script>
+    <script src="playground.js"></script>
+</body>
 </html>

@@ -37,6 +37,10 @@ body {
     padding: 0 4rem;
 }
 
+@media (max-width: 768px) {
+    .container { padding: 0 1.5rem; }
+}
+
 .brutal-border {
     border: 4px solid var(--border);
     box-shadow: var(--brutal-shadow-white);
@@ -384,8 +388,82 @@ footer {
     font-weight: 900;
 }
 
-@media (max-width: 1000px) {
-    h1 { font-size: 5rem; }
-    .container { padding: 0 2rem; }
-    .nav-links { display: none; }
+@media (max-width: 1200px) {
+    h1 { font-size: 5rem; letter-spacing: -3px; }
+}
+
+@media (max-width: 768px) {
+    h1 { font-size: 2.8rem; letter-spacing: -2px; }
+    h1 span { margin-top: 0.3rem; }
+    .container { padding: 0 1.5rem; }
+    .nav-links { 
+        gap: 1rem;
+        font-size: 0.65rem;
+    }
+    .nav-links a { font-size: 0.7rem; letter-spacing: 1px; }
+    .logo { font-size: 1.6rem; }
+    nav { padding: 1rem 4%; }
+    .hero { padding: 4rem 0; }
+    .hero-content { padding-left: 1.5rem; }
+    .hero-subtitle { font-size: 1rem; margin-bottom: 2rem; }
+    
+    .btn { padding: 1rem 1.5rem; font-size: 0.85rem; }
+    .brutal-card { padding: 1.5rem; }
+    .section-tag { font-size: 0.7rem; padding: 0.35rem 0.8rem; }
+    
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-item { padding: 2.5rem 1.5rem; }
+    .feature-item h3 { font-size: 1.8rem; }
+    .feature-item p { font-size: 0.95rem; }
+    
+    .tab-btn { padding: 1rem 1.5rem; font-size: 0.75rem; }
+    .code-window { padding: 1.5rem; }
+    .code-content { font-size: 0.8rem; }
+    
+    .marquee { font-size: 1rem; padding: 0.8rem 0; }
+    footer { padding: 3rem 1.5rem; }
+    .footer-logo { font-size: 2rem; }
+    
+    .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .stat-box { padding: 1rem; }
+    .stat-box .stat-value { font-size: 1.3rem; }
+    
+    .dashboard-nav { overflow-x: auto; }
+    .dashboard-nav-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
+    
+    .tier-card { padding: 1.5rem; }
+    .tier-card-price { font-size: 1.8rem; }
+    .api-key-display { padding: 1rem; font-size: 0.7rem; flex-direction: column; gap: 0.75rem; }
+    .key-item { flex-direction: column; gap: 0.75rem; }
+    .key-item .key-actions { align-self: flex-end; }
+    
+    .playground-container { grid-template-columns: 1fr; }
+    .preview-area { min-height: 300px; }
+    .log-table { font-size: 0.65rem; }
+    .log-table th, .log-table td { padding: 0.5rem; }
+    
+    .endpoint-tabs { overflow-x: auto; }
+    .endpoint-tab { padding: 0.6rem 1rem; font-size: 0.7rem; white-space: nowrap; }
+    
+    .result-meta { flex-direction: column; gap: 0.5rem; }
+    .result-meta .meta-item { font-size: 0.7rem; padding: 0.4rem 0.75rem; }
+    
+    .auth-card { padding: 0 0.5rem; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 2rem; letter-spacing: -1px; }
+    .container { padding: 0 1rem; }
+    .logo { font-size: 1.3rem; }
+    .nav-links { gap: 0.5rem; }
+    .nav-links a { font-size: 0.6rem; }
+    .btn { padding: 0.75rem 1rem; font-size: 0.75rem; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .dashboard-nav-btn { padding: 0.6rem 0.75rem; font-size: 0.55rem; }
+    .tier-card-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 }
