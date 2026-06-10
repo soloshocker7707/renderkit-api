@@ -2,8 +2,10 @@
   "installCommand": "npm install --ignore-scripts",
   "framework": null,
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
     { "source": "/v1/screenshot/(.*)", "destination": "/api/v1/screenshot/$1" },
-    { "source": "/health", "destination": "/api/health" }
+    { "source": "/health", "destination": "/api/health" },
+    { "source": "/(.*)", "destination": "/$1" }
   ],
   "builds": [
     {

@@ -72,7 +72,7 @@ export default async function handler(req, res) {
     aggressiveClean = false,
   } = body;
 
-  // Feature 8: Cache Lookup
+  // Feature 8: Cache Lookup (noCache is not part of the cache key since it controls lookup behavior)
   const cacheKey = JSON.stringify({
     url,
     template,

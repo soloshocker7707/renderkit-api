@@ -2,9 +2,23 @@ import { getBrowser, closeBrowser } from "../../../lib/browser.js";
 import { validateZuploSecret, setCorsHeaders } from "../../../lib/auth.js";
 import { Renderer } from "../../../lib/renderer.js";
 
-// Feature 8: Simple In-Memory Cache
 const cache = new Map();
-const CACHE_TTL = 1000 * 60 * 60; // 1 hour for OG images
+const CACHE_TTL = 1000 * 60 * 60;
+
+const ESCAPE_MAP = {
+  "\x26": "\x26\x61\x6d\x70\x3b",
+  "\x3c": "\x26\x6c\x74\x3b",
+  "\x3e": "\x26\x67\x74\x3b",
+  "\x22": "\x26\x71\x75\x6f\x74\x3b",
+  "\x27": "\x26\x23\x33\x39\x3b"
+};
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, function(c) {
+    return ESCAPE_MAP[c];
+  });
+}
 
 export default async function handler(req, res) {
   const startTime = Date.now();
@@ -16,7 +30,6 @@ export default async function handler(req, res) {
   res.setHeader("X-Request-ID", requestId);
   if (!validateZuploSecret(req, res)) return;
 
-  // Robust Body Parser Fallback
   let body = req.body;
   if (!body) {
     try {
@@ -82,31 +95,27 @@ export default async function handler(req, res) {
 
   const currentTheme = themes[theme] || themes.dark;
   const bgColor = background_color || currentTheme.bg;
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeLogoUrl = escapeHtml(logo_url || "");
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Outfit:wght@700&display=swap" rel="stylesheet">
-      <style>
-        body {
-          margin: 0; padding: 0; width: 1200px; height: 630px;
-          background-color: ${bgColor}; color: ${currentTheme.text};
-          font-family: 'Inter', sans-serif; display: flex; flex-direction: column;
-          justify-content: center; padding: 0 100px; box-sizing: border-box;
-          border: 15px solid ${currentTheme.accent};
-        }
-        h1 { font-size: 95px; font-weight: 900; margin: 0; line-height: 1.0; text-transform: uppercase; letter-spacing: -2px; }
-        p { font-size: 35px; margin-top: 30px; opacity: 0.8; font-family: 'Outfit', sans-serif; }
-      </style>
-    </head>
-    <body>
-      <h1>${title}</h1>
-      ${description ? `<p>${description}</p>` : ""}
-      ${logo_url ? `<img src="${logo_url}" alt="Logo" style="position:absolute;bottom:40px;right:60px;max-width:140px;max-height:80px;object-fit:contain;" />` : ""}
-    </body>
-    </html>
-  `;
+  const html = [
+    '<!DOCTYPE html><html><head>',
+    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Outfit:wght@700&display=swap" rel="stylesheet">',
+    '<style>',
+    'body{margin:0;padding:0;width:1200px;height:630px;',
+    'background-color:' + bgColor + ';color:' + currentTheme.text + ';',
+    'font-family:Inter,sans-serif;display:flex;flex-direction:column;',
+    'justify-content:center;padding:0 100px;box-sizing:border-box;',
+    'border:15px solid ' + currentTheme.accent + ';}',
+    'h1{font-size:95px;font-weight:900;margin:0;line-height:1.0;text-transform:uppercase;letter-spacing:-2px;}',
+    'p{font-size:35px;margin-top:30px;opacity:0.8;font-family:Outfit,sans-serif;}',
+    '</style></head><body>',
+    '<h1>' + safeTitle + '</h1>',
+    description ? '<p>' + safeDescription + '</p>' : "",
+    safeLogoUrl ? '<img src="' + safeLogoUrl + '" alt="Logo" style="position:absolute;bottom:40px;right:60px;max-width:140px;max-height:80px;object-fit:contain;" />' : "",
+    '</body></html>'
+  ].join("");
 
   let lastError = null;
   const maxRetries = 2;

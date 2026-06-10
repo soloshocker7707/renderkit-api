@@ -152,8 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body = {
                     title: document.getElementById('og-title')?.value || 'RenderKit OG',
                     description: document.getElementById('og-description')?.value || '',
-                    image_url: document.getElementById('og-image')?.value || '',
-                    url: url || undefined
+                    logo_url: document.getElementById('og-image')?.value || ''
                 };
             }
 
