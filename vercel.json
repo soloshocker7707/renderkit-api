@@ -1,10 +1,21 @@
 {
   "installCommand": "npm install --ignore-scripts",
+  "framework": null,
   "rewrites": [
     { "source": "/v1/screenshot/capture", "destination": "/api/v1/screenshot/capture" },
     { "source": "/v1/screenshot/pdf", "destination": "/api/v1/screenshot/pdf" },
     { "source": "/v1/screenshot/og", "destination": "/api/v1/screenshot/og" },
     { "source": "/health", "destination": "/api/health" }
+  ],
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
   ],
   "headers": [
     {
